@@ -148,6 +148,9 @@
         tr.aftersale:hover td:nth-last-child(1),tr.aftersale:hover td:nth-last-child(2){background:#fee2e2}
         .card-desc-popup{position:fixed;z-index:2000;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:14px 18px;box-shadow:0 8px 24px rgba(0,0,0,.15);max-width:320px;font-size:12.5px;line-height:1.6;animation:fadeIn .15s}
         @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+        /* 指标含义弹框 */
+        .indicator-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:2000;display:none;align-items:center;justify-content:center;padding:24px}
+        .indicator-modal-overlay.open{display:flex}
     </style>
 </head>
 <body>
@@ -314,6 +317,28 @@
         <div class="modal-footer"><button class="btn btn-reset" onclick="closeModal()">关闭</button><button class="btn btn-primary" onclick="printDetail()">打印</button></div>
     </div>
 </div>
+<!-- INDICATOR MODAL -->
+<div class="indicator-modal-overlay" id="indicatorModal" onclick="if(event.target===this)closeIndicatorModal()">
+    <div class="modal" style="width:680px;">
+        <div class="modal-header"><div><div class="modal-title">📖 指标含义说明</div><div class="modal-subtitle">各统计指标的取值逻辑</div></div><button class="modal-close" onclick="closeIndicatorModal()">✕</button></div>
+        <div class="modal-body" style="padding:16px 20px;">
+            <table style="width:100%;border-collapse:collapse;font-size:12.5px;white-space:normal;">
+                <thead><tr style="background:#f8fafc;"><th style="padding:8px 12px;text-align:left;font-size:11px;color:#64748b;font-weight:600;border-bottom:2px solid #e2e8f0;width:160px;">指标</th><th style="padding:8px 12px;text-align:left;font-size:11px;color:#64748b;font-weight:600;border-bottom:2px solid #e2e8f0;">取值逻辑</th></tr></thead>
+                <tbody>
+                    <tr><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">上拍台次（去重）</td><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;line-height:1.6;">统计周期内参与上拍的车辆数，按 VIN 码唯一去重计数。<br><span style="color:#64748b;font-size:11px;">示例值：242 台</span></td></tr>
+                    <tr style="background:#fafbfc;"><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">成交台次（去重）</td><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;line-height:1.6;">统计周期内成交订单中的车辆数，按 VIN 码唯一去重计数。<br><span style="color:#64748b;font-size:11px;">示例值：192 台</span></td></tr>
+                    <tr><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">成交率（去重）</td><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;line-height:1.6;">去重成交台次 ÷ 去重上拍台次，保留两位小数。<br><span style="color:#64748b;font-size:11px;">示例：192 / 242 ≈ 79.34%</span></td></tr>
+                    <tr style="background:#fafbfc;"><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">检测台次</td><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;line-height:1.6;">统计周期内完成检测的记录数，<span style="color:#dc2626;font-weight:500;">不去重</span>（同一辆车可多次检测，每次分别计数）。<br><span style="color:#64748b;font-size:11px;">示例值：215 台</span></td></tr>
+                    <tr><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">交易总毛利</td><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;line-height:1.6;">所有成交订单的毛利求和（唯普毛利 + 唯普云毛利 + 汇和毛利 + 机拍毛利）。<br><span style="color:#64748b;font-size:11px;">示例值：284,500 元</span></td></tr>
+                    <tr style="background:#fafbfc;"><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">绩效毛利</td><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;line-height:1.6;">用于绩效核算的毛利合计，即交易总毛利减去所有成本费用项后的最终金额。<br><span style="color:#64748b;font-size:11px;">示例值：198,350 元</span></td></tr>
+                    <tr><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">售后台次</td><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;line-height:1.6;">统计周期内发生售后问题的车辆台次，<span style="color:#dc2626;font-weight:500;">不去重</span>（同一台车可多次售后）。<br><span style="color:#64748b;font-size:11px;">示例值：5 台</span></td></tr>
+                    <tr style="background:#fafbfc;"><td style="padding:8px 12px;font-weight:600;">售后退车台次</td><td style="padding:8px 12px;line-height:1.6;">售后中最终退车处理的台次，<span style="color:#dc2626;font-weight:500;">不去重</span>（同一台车可多次售后退车）。<br><span style="color:#64748b;font-size:11px;">示例值：3 台</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer"><button class="btn btn-reset" onclick="closeIndicatorModal()">关闭</button></div>
+    </div>
+</div>
 <script>
 const rows=[
 {confirmDate:'2026-03-02',plate:'粤B·12345',vin:'LFV2A2150J3123456',vid:'1705143374',contractType:'委拍',inspected:'是',status:'已过户',paid:'已付款',aftersale:'无',responsibility:'-',dealPrice:50000,contractPrice:48000,startPrice:45000,store:'深圳南沙',region:'广东-深圳',subRegion:'广东-深圳',totalProfit:6000,weipuProfit:6000,weipuyunProfit:0,huiheProfit:0,jipaProfit:0,serviceFee:200,evalFee:1000,inspCost:85,salesCost:300,assessor:'王五',regionMgr:'张三',vp:'李四',dept:'车源部',bizFee:0,loanInterest:0,inboundTime:'2026-02-10',inboundLoc:'深圳服务中心',pickupFee:100,pickupPerson:'陈小明',pickupType:'自提',deliveryCost:150,deliveryDept:'南沙服务中心',airDeliveryCost:0,airDeliveryDept:'-',airDeliveryFollower:'-',transferCost:350,transferDept:'南沙服务中心',inspector:'李五',dataCost:10,siteFee:0,repoCost:0,perfProfit:4705,perfSalary:0,aftersaleRecord:null},
@@ -371,7 +396,10 @@ function renderDashboard(){
 
     document.getElementById('dashboardContent').innerHTML=`
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-            <div style="font-size:15px;font-weight:700;color:var(--text-primary);">数据看板</div>
+            <div style="display:flex;align-items:center;gap:16px;">
+                <div style="font-size:15px;font-weight:700;color:var(--text-primary);">数据看板</div>
+                <span onclick="showIndicatorModal()" style="color:#dc2626;font-size:13px;cursor:pointer;font-weight:500;">指标含义：点击查看指标取值说明</span>
+            </div>
             <div style="display:flex;align-items:center;gap:10px;">
                 <label style="font-size:12px;font-weight:600;color:#475569;">统计周期：</label>
                 <input type="date" id="dashStart" value="${defStart}" style="padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:12px;font-family:var(--sans);outline:none;">
@@ -447,28 +475,7 @@ function renderDashboard(){
             </div>
         </div>
 
-        <!-- ===== 指标说明 ===== -->
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px 20px;margin-bottom:20px;">
-            <div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:14px;">📖 指标取值说明</div>
-            <div style="overflow-x:auto;border:1px solid #e2e8f0;border-radius:6px;">
-                <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
-                    <thead><tr style="background:#f8fafc;">
-                        <th style="padding:8px 12px;text-align:left;font-size:11px;color:#64748b;font-weight:600;border-bottom:2px solid #e2e8f0;width:160px;">指标</th>
-                        <th style="padding:8px 12px;text-align:left;font-size:11px;color:#64748b;font-weight:600;border-bottom:2px solid #e2e8f0;">取值逻辑</th>
-                    </tr></thead>
-                    <tbody>
-                        <tr><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">上拍台次（去重）</td><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;line-height:1.6;">统计周期内参与上拍的车辆数，按 VIN 码唯一去重计数。<br><span style="color:#64748b;font-size:11px;">示例值：242 台</span></td></tr>
-                        <tr style="background:#fafbfc;"><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">成交台次（去重）</td><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;line-height:1.6;">统计周期内成交订单中的车辆数，按 VIN 码唯一去重计数。<br><span style="color:#64748b;font-size:11px;">示例值：192 台</span></td></tr>
-                        <tr><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">成交率（去重）</td><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;line-height:1.6;">去重成交台次 ÷ 去重上拍台次，保留两位小数。<br><span style="color:#64748b;font-size:11px;">示例：192 / 242 ≈ 79.34%</span></td></tr>
-                        <tr style="background:#fafbfc;"><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">检测台次</td><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;line-height:1.6;">统计周期内完成检测的记录数，<span style="color:#dc2626;font-weight:500;">不去重</span>（同一辆车可多次检测，每次分别计数）。<br><span style="color:#64748b;font-size:11px;">示例值：215 台</span></td></tr>
-                        <tr><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">交易总毛利</td><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;line-height:1.6;">所有成交订单的毛利求和（唯普毛利 + 唯普云毛利 + 汇和毛利 + 机拍毛利）。<br><span style="color:#64748b;font-size:11px;">示例值：284,500 元</span></td></tr>
-                        <tr style="background:#fafbfc;"><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">绩效毛利</td><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;line-height:1.6;">用于绩效核算的毛利合计，即交易总毛利减去所有成本费用项后的最终金额。<br><span style="color:#64748b;font-size:11px;">示例值：198,350 元</span></td></tr>
-                        <tr><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">售后台次</td><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;line-height:1.6;">统计周期内发生售后问题的车辆台次，<span style="color:#dc2626;font-weight:500;">不去重</span>（同一台车可多次售后）。<br><span style="color:#64748b;font-size:11px;">示例值：5 台</span></td></tr>
-                        <tr style="background:#fafbfc;"><td style="padding:8px 12px;font-weight:600;">售后退车台次</td><td style="padding:8px 12px;line-height:1.6;">售后中最终退车处理的台次，<span style="color:#dc2626;font-weight:500;">不去重</span>（同一台车可多次售后退车）。<br><span style="color:#64748b;font-size:11px;">示例值：3 台</span></td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>`;
+
 }
 function renderTable(){
     document.getElementById('tableBody').innerHTML=rows.map((r,i)=>`
@@ -573,6 +580,8 @@ function openDetail(idx){
     document.getElementById('detailModal').classList.add('open');
 }
 function closeModal(){document.getElementById('detailModal').classList.remove('open')}
+function showIndicatorModal(){document.getElementById('indicatorModal').classList.add('open')}
+function closeIndicatorModal(){document.getElementById('indicatorModal').classList.remove('open')}
 function renderCases(){
     // Helper: build a case table row with split delivery columns
     function caseRow(date,plate,status,statusColor,paid,dealPrice,totalProfit,profitColor,weipuProfit,inspCost,pickupFee,siteDeliver,airDeliver,siteTransfer,bizFee,dataCost,perfProfit,perfColor,note){
