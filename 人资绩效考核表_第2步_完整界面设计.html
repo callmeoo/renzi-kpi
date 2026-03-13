@@ -222,7 +222,7 @@
                             <th style="min-width:80px">车牌</th><th style="min-width:130px">VIN码</th><th style="min-width:100px">VID</th>
                             <th style="min-width:100px">门店名称</th><th style="min-width:60px">大区域</th><th style="min-width:60px">小区域</th>
                             <th style="min-width:72px">评估师</th><th style="min-width:72px">区域经理</th><th style="min-width:72px">副部长</th><th style="min-width:72px">事业部</th>
-                            <th style="min-width:68px">合同类型</th><th style="min-width:60px">是否检测</th><th style="min-width:80px">车辆状态</th>
+                            <th style="min-width:68px">合同类型</th><th style="min-width:80px">车辆状态</th>
                             <th style="min-width:68px">售后状态</th><th style="min-width:80px">责任方</th>
                             <th style="min-width:88px">清分日期</th><th class="num" style="min-width:90px">成交价</th><th class="num" style="min-width:90px">合同价</th><th class="num" style="min-width:90px">起拍价</th>
                             <th class="num" style="min-width:100px">交易总毛利</th>
@@ -329,7 +329,6 @@ const fieldDefs=[
 ['VIN 码','车辆识别代号，17 位'],
 ['VID','唯普系统内部车辆 ID'],
 ['合同类型','委拍 或 收购'],
-['是否检测','是否完成车辆检测(是否检测单过审，过审则已检测反之否)'],
 ['车辆状态','已入库→已检测→已清分→已交付→已过户→已售后'],
 ['售后状态','无 / 售后退车 / 售后不退车：售后执行完毕统计'],
 ['责任方','售后时的责任归属部门(仅取值到部门，eg.车源生态部)'],
@@ -532,7 +531,7 @@ function renderTable(){
             <td style="font-family:var(--mono);font-size:11px">${r.vin}</td><td style="font-family:var(--mono);font-size:11px">${r.vid}</td>
             <td>${r.store}</td><td>${r.region}</td><td>${r.subRegion}</td>
             <td>${r.assessor}</td><td>${r.regionMgr}</td><td>${r.vp}</td><td>${r.dept}</td>
-            <td>${r.contractType}</td><td>${r.inspected}</td><td>${statusBadge(r.status)}</td>
+            <td>${r.contractType}</td><td>${statusBadge(r.status)}</td>
             <td>${r.aftersale!=='无'&&r.aftersale?'<span class="badge badge-red">'+r.aftersale+'</span>':'<span class="badge badge-gray">无</span>'}</td>
             <td>${r.responsibility}</td>
             <td>${r.confirmDate}</td>
