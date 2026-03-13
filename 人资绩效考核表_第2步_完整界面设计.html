@@ -228,7 +228,6 @@
                             <th class="num" style="min-width:100px">交易总毛利</th>
                             <th class="num" style="min-width:88px">唯普毛利</th><th class="num" style="min-width:88px">唯普云毛利</th>
                             <th class="num" style="min-width:88px">汇和毛利</th><th class="num" style="min-width:88px">机拍毛利</th>
-                            <th class="num" style="min-width:80px">毛利</th>
                             <th>入库时间</th><th style="min-width:80px">入库地点</th><th class="num" style="min-width:70px">提车费</th><th style="min-width:72px">提车人</th><th style="min-width:72px">提车类型</th>
                             <th class="num" style="min-width:80px">检测成本</th><th style="min-width:72px">检测员</th><th class="num" style="min-width:80px">数据成本</th>
                             <th class="num" style="min-width:88px">平台使用费</th>
@@ -370,7 +369,6 @@ const fieldDefs=[
 ['唯普云毛利','归属唯普云的毛利，同经管报表"唯普云毛利"字段'],
 ['汇和毛利','调整汇和毛利取值逻辑，由原有1部分调整为4部分之和：汇和毛利 = ① 原有汇和收益 + ② 门店自垫款收益(门店自垫款车辆成交订单) + ③ 零售衍生收入(自拍后更改买家)+ ④ 门店自垫款订单调账\\n① 原有汇和收益（保持不变）\\n●数据来源：汇和毛利字段（huihesy + fshhgzsy + hhgzsy）\\n●钱包流水中摘要为【衍生服务-其他-结算】的记录，按车牌匹配90天内的成交订单（排除已仲裁退车的订单）\\n② 新增：门店自垫款收益\\n●适用范围：一汽大众事业部下属奥迪门店12家，见附表\\n●计算公式：门店成交订单，收益=（成交价 - 合同价）\\n●合同价 > 成交价时（结果为负），也纳入计算，记为负值\\n③ 新增：零售衍生收入\\n●适用范围：一汽大众事业部下属奥迪门店12家\\n●取值规则：该门店钱包账户中，已清算流水中摘要包含"零售溢价"的金额之和（含正负向）\\n●排重规则：排除账户名称为"汇和收益"的流水（避免与①重复计算）\\n④ 新增：门店自垫款调账\\n●适用范围：一汽大众事业部下属奥迪门店12家\\n●取值规则：已结算流水中摘要包含"订单调账款项：车牌"的金额之和'],
 ['机拍毛利','归属机拍的毛利，同经管报表"机拍毛利"字段'],
-['毛利','同财务系统"毛利"字段；（待技术确认指标值，待红姐确认分成字段）'],
 ['交易总毛利','唯普 + 唯普云 + 汇和 + 机拍毛利合计'],
 ['现场交付成本','T4 交付型出库 150 元\\n交付型出库：包含4种情况：①服务中心出库，且出库类型=已售交付；②服务中心出库，且出库类型=过户临时过户出库（过户专员-过户不回库）；③服务中心出库，且出库类型=过户前临时放行；④服务中心出库，且出库类型=自过户提车'],
 ['现场交付部门','执行现场交付的服务中心(跟进服务中心)\\n举例：唯普服务中心 （待小欣确认）'],
@@ -543,7 +541,6 @@ function renderTable(){
             <td class="num muted">${fmt(r.weipuyunProfit)}</td>
             <td class="${profitClass(r.huiheProfit)}">${fmt(r.huiheProfit)}</td>
             <td class="num muted">${fmt(r.jipaProfit)}</td>
-            <td class="num muted">${fmt(r.grossProfit||0)}</td>
             <td style="font-size:11px">${r.inboundTime}</td><td>${r.inboundLoc}</td>
             <td class="num">${fmt(r.pickupFee)}</td><td>${r.pickupPerson}</td><td>${r.pickupType}</td>
             <td class="num">${fmt(r.inspCost)}</td><td>${r.inspector}</td><td class="num muted">${fmt(r.dataCost)}</td>
