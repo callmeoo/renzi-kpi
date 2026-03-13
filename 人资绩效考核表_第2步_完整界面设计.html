@@ -426,8 +426,8 @@ function renderDashboard(){
     // 默认自然月
     const now=new Date();
     const y=now.getFullYear(), m=String(now.getMonth()+1).padStart(2,'0');
-    const lastDay=new Date(y,now.getMonth()+1,0).getDate();
-    const defStart=y+'-'+m+'-01', defEnd=y+'-'+m+'-'+String(lastDay).padStart(2,'0');
+    const d=String(now.getDate()).padStart(2,'0');
+    const defStart=y+'-'+m+'-01', defEnd=y+'-'+m+'-'+d;
 
     document.getElementById('dashboardContent').innerHTML=`
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
@@ -437,9 +437,15 @@ function renderDashboard(){
             </div>
             <div style="display:flex;align-items:center;gap:10px;">
                 <label style="font-size:12px;font-weight:600;color:#475569;">统计周期：</label>
-                <input type="date" id="dashStart" value="${defStart}" style="padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:12px;font-family:var(--sans);outline:none;">
-                <span style="font-size:11px;color:#94a3b8;">至</span>
-                <input type="date" id="dashEnd" value="${defEnd}" style="padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:12px;font-family:var(--sans);outline:none;">
+                <div id="dateRangePicker" style="position:relative;display:inline-block;">
+                    <div onclick="toggleDatePicker()" style="padding:6px 12px;border:1px solid #e2e8f0;border-radius:6px;font-size:12px;font-family:var(--sans);cursor:pointer;background:#fff;display:flex;align-items:center;gap:8px;min-width:220px;">
+                        <span id="dateRangeLabel">${defStart.replace(/-/g,'/')} ~ ${defEnd.replace(/-/g,'/')}</span>
+                        <span style="margin-left:auto;color:#94a3b8;">📅</span>
+                    </div>
+                    <div id="datePickerDropdown" style="display:none;position:absolute;top:calc(100% + 4px);left:0;z-index:100;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);padding:16px;"></div>
+                </div>
+                <input type="hidden" id="dashStart" value="${defStart}">
+                <input type="hidden" id="dashEnd" value="${defEnd}">
                 <button class="btn btn-primary" onclick="refreshDashboard()" style="padding:5px 12px;font-size:12px;">查询</button>
             </div>
         </div>
@@ -955,6 +961,107 @@ function showFieldDefs(){
 function renderGlossary(){
     document.getElementById('glossaryBody').innerHTML=fieldDefs.map(d=>`<tr><td style="padding:7px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">${d[0]}</td><td style="padding:7px 12px;border-bottom:1px solid #f1f5f9;color:#475569;line-height:1.6;">${d[1].replace(/\\n/g,'<br>')}</td></tr>`).join('');
 }
+// ===== Date Range Picker =====
+let dpState={selecting:'start',startDate:null,endDate:null,viewYear:0,viewMonth:0};
+function initDatePicker(){
+    const now=new Date();
+    dpState.viewYear=now.getFullYear();
+    dpState.viewMonth=now.getMonth();
+    const s=document.getElementById('dashStart').value;
+    const e=document.getElementById('dashEnd').value;
+    if(s)dpState.startDate=new Date(s+'T00:00:00');
+    if(e)dpState.endDate=new Date(e+'T00:00:00');
+}
+function toggleDatePicker(){
+    const dd=document.getElementById('datePickerDropdown');
+    if(dd.style.display==='none'){initDatePicker();renderDatePicker();dd.style.display='block'}
+    else dd.style.display='none';
+}
+function fmtD(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function fmtDSlash(d){return d.getFullYear()+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getDate()).padStart(2,'0')}
+function isSameDay(a,b){return a&&b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate()}
+function isInRange(d,s,e){return s&&e&&d>=s&&d<=e}
+function renderDatePicker(){
+    const dd=document.getElementById('datePickerDropdown');
+    const vy=dpState.viewYear,vm=dpState.viewMonth;
+    const ny=vm===11?vy+1:vy,nm=vm===11?0:vm+1;
+    const mNames=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+    function buildMonth(year,month){
+        const first=new Date(year,month,1);const dow=first.getDay();
+        const daysInMonth=new Date(year,month+1,0).getDate();
+        const prevDays=new Date(year,month,0).getDate();
+        let html='<table style="border-collapse:collapse;width:100%;"><thead><tr>';
+        ['日','一','二','三','四','五','六'].forEach(d=>{html+='<th style="padding:6px 0;font-size:11px;color:#94a3b8;font-weight:500;text-align:center;width:32px;">'+d+'</th>'});
+        html+='</tr></thead><tbody>';
+        let day=1,nextDay=1;
+        for(let w=0;w<6;w++){
+            html+='<tr>';
+            for(let d=0;d<7;d++){
+                const idx=w*7+d;
+                if(idx<dow){
+                    const pd=prevDays-dow+idx+1;
+                    html+='<td style="padding:4px 0;text-align:center;font-size:12px;color:#d1d5db;">'+pd+'</td>';
+                }else if(day>daysInMonth){
+                    html+='<td style="padding:4px 0;text-align:center;font-size:12px;color:#d1d5db;">'+(nextDay++)+'</td>';
+                }else{
+                    const thisDate=new Date(year,month,day);
+                    const isStart=isSameDay(thisDate,dpState.startDate);
+                    const isEnd=isSameDay(thisDate,dpState.endDate);
+                    const inRange=isInRange(thisDate,dpState.startDate,dpState.endDate);
+                    let bg='',color='#0f172a',fw='400',border='';
+                    if(isStart||isEnd){bg='#2563eb';color='#fff';fw='600';border='border-radius:50%;'}
+                    else if(inRange){bg='#dbeafe';color='#1d4ed8';}
+                    const today=new Date();
+                    const isToday=isSameDay(thisDate,today);
+                    let extra=isToday&&!isStart&&!isEnd?'box-shadow:inset 0 0 0 1px #2563eb;border-radius:50%;':'';
+                    html+='<td style="padding:2px 0;text-align:center;"><div onclick="pickDate('+year+','+month+','+day+')" style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;font-size:12px;cursor:pointer;background:'+bg+';color:'+color+';font-weight:'+fw+';'+border+extra+'">'+day+'</div></td>';
+                    day++;
+                }
+            }
+            html+='</tr>';
+            if(day>daysInMonth)break;
+        }
+        html+='</tbody></table>';
+        return html;
+    }
+    dd.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">'+
+        '<div style="display:flex;gap:6px;"><span onclick="dpNav(-12)" style="cursor:pointer;padding:2px 6px;color:#64748b;font-size:14px;">«</span><span onclick="dpNav(-1)" style="cursor:pointer;padding:2px 6px;color:#64748b;font-size:14px;">‹</span></div>'+
+        '<div style="display:flex;gap:40px;font-size:13px;font-weight:600;color:#0f172a;"><span>'+vy+'年 '+mNames[vm]+'</span><span>'+ny+'年 '+mNames[nm]+'</span></div>'+
+        '<div style="display:flex;gap:6px;"><span onclick="dpNav(1)" style="cursor:pointer;padding:2px 6px;color:#64748b;font-size:14px;">›</span><span onclick="dpNav(12)" style="cursor:pointer;padding:2px 6px;color:#64748b;font-size:14px;">»</span></div>'+
+    '</div>'+
+    '<div style="display:flex;gap:16px;">'+
+        '<div style="flex:1;">'+buildMonth(vy,vm)+'</div>'+
+        '<div style="flex:1;">'+buildMonth(ny,nm)+'</div>'+
+    '</div>';
+}
+function dpNav(offset){
+    let m=dpState.viewMonth+offset;
+    let y=dpState.viewYear+Math.floor(m/12);
+    m=((m%12)+12)%12;
+    dpState.viewYear=y;dpState.viewMonth=m;
+    renderDatePicker();
+}
+function pickDate(y,m,d){
+    const picked=new Date(y,m,d);
+    if(dpState.selecting==='start'||(!dpState.selecting==='end')){
+        dpState.startDate=picked;dpState.endDate=null;dpState.selecting='end';
+    }else{
+        if(picked<dpState.startDate){dpState.startDate=picked;dpState.selecting='end';}
+        else{dpState.endDate=picked;dpState.selecting='start';applyDateRange();}
+    }
+    renderDatePicker();
+}
+function applyDateRange(){
+    if(!dpState.startDate||!dpState.endDate)return;
+    document.getElementById('dashStart').value=fmtD(dpState.startDate);
+    document.getElementById('dashEnd').value=fmtD(dpState.endDate);
+    document.getElementById('dateRangeLabel').textContent=fmtDSlash(dpState.startDate)+' ~ '+fmtDSlash(dpState.endDate);
+    document.getElementById('datePickerDropdown').style.display='none';
+}
+document.addEventListener('click',function(e){
+    const picker=document.getElementById('dateRangePicker');
+    if(picker&&!picker.contains(e.target)){document.getElementById('datePickerDropdown').style.display='none';if(dpState.selecting==='end'){dpState.selecting='start';}}
+});
 // Init
 function refreshDashboard(){
     const s=document.getElementById('dashStart').value;
