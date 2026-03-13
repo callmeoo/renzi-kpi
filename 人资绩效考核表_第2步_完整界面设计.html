@@ -220,11 +220,11 @@
                     <div class="table-outer">
                         <table id="mainTable"><thead><tr>
                             <th style="min-width:80px">车牌</th><th style="min-width:130px">VIN码</th><th style="min-width:100px">VID</th>
+                            <th style="min-width:100px">门店名称</th><th style="min-width:60px">大区域</th><th style="min-width:60px">小区域</th>
+                            <th style="min-width:72px">评估师</th><th style="min-width:72px">区域经理</th><th style="min-width:72px">副部长</th><th style="min-width:72px">事业部</th>
                             <th style="min-width:68px">合同类型</th><th style="min-width:60px">是否检测</th><th style="min-width:80px">车辆状态</th>
                             <th style="min-width:68px">售后状态</th><th style="min-width:80px">责任方</th>
                             <th style="min-width:88px">清分日期</th><th class="num" style="min-width:90px">成交价</th><th class="num" style="min-width:90px">合同价</th><th class="num" style="min-width:90px">起拍价</th>
-                            <th style="min-width:100px">门店名称</th><th style="min-width:60px">大区域</th><th style="min-width:60px">小区域</th>
-                            <th style="min-width:72px">评估师</th><th style="min-width:72px">区域经理</th><th style="min-width:72px">副部长</th><th style="min-width:72px">事业部</th>
                             <th>入库时间</th><th style="min-width:80px">入库地点</th><th class="num" style="min-width:70px">提车费</th><th style="min-width:72px">提车人</th><th style="min-width:72px">提车类型</th>
                             <th class="num" style="min-width:80px">检测成本</th><th style="min-width:72px">检测员</th><th class="num" style="min-width:80px">数据成本</th>
                             <th class="num" style="min-width:88px">综合服务费</th><th class="num" style="min-width:80px">评估费</th>
@@ -522,6 +522,8 @@ function renderTable(){
         <tr class="${r.aftersale!=='无'&&r.aftersale?'aftersale':''}">
             <td><span class="plate">${r.plate}</span></td>
             <td style="font-family:var(--mono);font-size:11px">${r.vin}</td><td style="font-family:var(--mono);font-size:11px">${r.vid}</td>
+            <td>${r.store}</td><td>${r.region}</td><td>${r.subRegion}</td>
+            <td>${r.assessor}</td><td>${r.regionMgr}</td><td>${r.vp}</td><td>${r.dept}</td>
             <td>${r.contractType}</td><td>${r.inspected}</td><td>${statusBadge(r.status)}</td>
             <td>${r.aftersale!=='无'&&r.aftersale?'<span class="badge badge-red">'+r.aftersale+'</span>':'<span class="badge badge-gray">无</span>'}</td>
             <td>${r.responsibility}</td>
@@ -529,8 +531,6 @@ function renderTable(){
             <td class="num">${r.dealPrice?fmt(r.dealPrice):'<span style="color:#94a3b8">—</span>'}</td>
             <td class="num">${r.contractPrice?fmt(r.contractPrice):'<span style="color:#94a3b8">—</span>'}</td>
             <td class="num">${fmt(r.startPrice)}</td>
-            <td>${r.store}</td><td>${r.region}</td><td>${r.subRegion}</td>
-            <td>${r.assessor}</td><td>${r.regionMgr}</td><td>${r.vp}</td><td>${r.dept}</td>
             <td style="font-size:11px">${r.inboundTime}</td><td>${r.inboundLoc}</td>
             <td class="num">${fmt(r.pickupFee)}</td><td>${r.pickupPerson}</td><td>${r.pickupType}</td>
             <td class="num">${fmt(r.inspCost)}</td><td>${r.inspector}</td><td class="num muted">${fmt(r.dataCost)}</td>
