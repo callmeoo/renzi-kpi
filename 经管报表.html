@@ -183,7 +183,28 @@
                 <button class="btn btn-blue">导入明细</button>
                 <button class="btn btn-blue">导出</button>
             </div>
-            <div class="table-outer"><table id="costDetailTable"></table></div>
+            <div style="display:flex;flex:1;min-height:0;">
+                <div style="flex:1;overflow:auto;"><table id="costDetailTable"></table></div>
+                <div style="width:360px;flex-shrink:0;border-left:1px solid var(--border);padding:16px;overflow-y:auto;background:#fff;">
+                    <div style="border:2px solid #dc2626;border-radius:8px;padding:14px;margin-bottom:14px;">
+                        <div style="font-size:13px;font-weight:700;color:#dc2626;margin-bottom:8px;">这里写需求说明，有个新的导入模板。</div>
+                        <div style="font-size:12.5px;color:#dc2626;line-height:1.8;">
+                            需求说明：<br>
+                            1、车信盟（事故报告）成本变更<br>
+                            2、政企场地费=0，人工计入<br>
+                            3、合作服务费，仲裁退车改规则<br>
+                            4、交付成本=0（或作废）<br>
+                            5、新增 提车费、空中交付成本、现场交付成本、现场过户成本<br>
+                            <span style="font-weight:600;">这些费用系统实时计算，规则同绩效表同字段</span>
+                        </div>
+                    </div>
+                    <div style="border:2px solid #dc2626;border-radius:8px;padding:14px;">
+                        <div style="font-size:12.5px;color:#dc2626;line-height:1.8;">
+                            这里有个导入模板，点击下载新的导入模板。导入模板见目录中的导入模板。
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="table-footer"><div style="color:#000;font-size:11px;">费用明细</div><div id="costDetailCount"></div></div>
         </div>
         </div>
