@@ -222,7 +222,7 @@
                             <th style="min-width:80px">车牌</th><th style="min-width:130px">VIN码</th><th style="min-width:100px">VID</th>
                             <th style="min-width:100px">门店名称</th><th style="min-width:60px">大区域</th><th style="min-width:60px">小区域</th>
                             <th style="min-width:72px">评估师</th><th style="min-width:72px">区域经理</th><th style="min-width:72px">副部长</th><th style="min-width:72px">事业部</th>
-                            <th style="min-width:68px">合同类型</th><th style="min-width:80px">车辆状态</th>
+                            <th style="min-width:68px">合同类型</th><th style="min-width:80px">关键事件</th>
                             <th style="min-width:68px">售后状态</th><th style="min-width:80px">责任方</th>
                             <th style="min-width:88px">清分日期</th><th class="num" style="min-width:90px">成交价</th><th class="num" style="min-width:90px">合同价</th><th class="num" style="min-width:90px">起拍价</th>
                             <th class="num" style="min-width:100px">交易总毛利</th>
@@ -328,7 +328,7 @@ const fieldDefs=[
 ['VIN 码','车辆识别代号，17 位'],
 ['VID','唯普系统内部车辆 ID'],
 ['合同类型','委拍 或 收购'],
-['车辆状态','已入库→已检测→已清分→已交付→已过户→已售后'],
+['关键事件','数据写入时机点：数据查询→入唯普库→检测过审→成交付款→交付出库→过户回收→售后完成'],
 ['售后状态','无 / 售后退车 / 售后不退车：售后执行完毕统计'],
 ['责任方','售后时的责任归属部门(仅取值到部门，eg.车源生态部)'],
 ['清分日期','订单清分完成日期（yyyy-mm-dd）'],
@@ -380,16 +380,16 @@ const fieldDefs=[
 ['绩效工资','人工核算，占位字段']
 ];
 const rows=[
-{confirmDate:'2026-03-02',plate:'粤B·12345',vin:'LFV2A2150J3123456',vid:'1705143374',contractType:'委拍',inspected:'是',status:'已过户',paid:'已付款',aftersale:'无',responsibility:'-',dealPrice:50000,contractPrice:48000,startPrice:45000,store:'深圳南沙',region:'广东-深圳',subRegion:'广东-深圳',totalProfit:6000,weipuProfit:6000,weipuyunProfit:0,huiheProfit:0,jipaProfit:0,serviceFee:200,evalFee:1000,inspCost:85,salesCost:300,assessor:'王五',regionMgr:'张三',vp:'李四',dept:'车源部',bizFee:0,loanInterest:0,inboundTime:'2026-02-10',inboundLoc:'深圳服务中心',pickupFee:100,pickupPerson:'陈小明',pickupType:'自提',deliveryCost:150,deliveryDept:'南沙服务中心',airDeliveryCost:0,airDeliveryDept:'-',airDeliveryFollower:'-',transferCost:350,transferDept:'南沙服务中心',inspector:'李五',dataCost:10,siteFee:0,repoCost:0,perfProfit:4705,perfSalary:0,aftersaleRecord:null},
-{confirmDate:'',plate:'粤A·22222',vin:'LFV2A21509C234567',vid:'1705143376',contractType:'收购',inspected:'是',status:'已检测',paid:'',aftersale:'无',responsibility:'-',dealPrice:0,contractPrice:80000,startPrice:75000,store:'佛山汇和广州分公司',region:'广东-广州',subRegion:'番禺区域',totalProfit:0,weipuProfit:0,weipuyunProfit:0,huiheProfit:0,jipaProfit:0,serviceFee:0,evalFee:0,inspCost:120,salesCost:0,assessor:'赵六',regionMgr:'钱七',vp:'孙八',dept:'车源部',bizFee:0,loanInterest:0,inboundTime:'2026-02-20',inboundLoc:'白云服务中心',pickupFee:100,pickupPerson:'刘大力',pickupType:'第三方',deliveryCost:0,deliveryDept:'-',airDeliveryCost:0,airDeliveryDept:'-',airDeliveryFollower:'-',transferCost:0,transferDept:'-',inspector:'周九',dataCost:15,siteFee:0,repoCost:0,perfProfit:-235,perfSalary:0,aftersaleRecord:null},
-{confirmDate:'2026-03-06',plate:'粤B·55555',vin:'LFV2A21509D345678',vid:'1705143380',contractType:'委拍',inspected:'是',status:'已售后',paid:'已付款',aftersale:'售后退车',responsibility:'车源部',dealPrice:42000,contractPrice:40000,startPrice:38000,store:'深圳福田',region:'广东-深圳',subRegion:'南山片区',totalProfit:4500,weipuProfit:4500,weipuyunProfit:0,huiheProfit:0,jipaProfit:0,serviceFee:800,evalFee:200,inspCost:85,salesCost:300,assessor:'吴十',regionMgr:'张三',vp:'李四',dept:'车源部',bizFee:500,loanInterest:0,inboundTime:'2026-02-15',inboundLoc:'1库',pickupFee:100,pickupPerson:'张伟',pickupType:'自提',deliveryCost:150,deliveryDept:'福田服务中心',airDeliveryCost:0,airDeliveryDept:'-',airDeliveryFollower:'-',transferCost:350,transferDept:'福田服务中心',inspector:'郑十一',dataCost:10,siteFee:0,repoCost:0,perfProfit:-1495,perfSalary:0,aftersaleRecord:{reason:'车辆质量问题',responsibility:'车源生态事业部',extraLoss:0,exempt:false}},
-{confirmDate:'2026-03-07',plate:'粤A·88888',vin:'LFV2A21509E456789',vid:'1705143385',contractType:'委拍',inspected:'是',status:'已售后',paid:'已付款',aftersale:'售后不退车',responsibility:'检测部门',dealPrice:38000,contractPrice:36000,startPrice:34000,store:'广州番禺',region:'广东-广州',subRegion:'番禺区域',totalProfit:3800,weipuProfit:0,weipuyunProfit:3800,huiheProfit:0,jipaProfit:0,serviceFee:700,evalFee:200,inspCost:85,salesCost:200,assessor:'赵六',regionMgr:'钱七',vp:'孙八',dept:'车源部',bizFee:300,loanInterest:0,inboundTime:'2026-02-05',inboundLoc:'广州南沙库',pickupFee:100,pickupPerson:'王强',pickupType:'第三方',deliveryCost:150,deliveryDept:'番禺服务中心',airDeliveryCost:0,airDeliveryDept:'-',airDeliveryFollower:'-',transferCost:350,transferDept:'番禺服务中心',inspector:'周九',dataCost:10,siteFee:0,repoCost:0,perfProfit:2505,perfSalary:0,aftersaleRecord:{reason:'检测遗漏问题',responsibility:'检测部门',extraLoss:0,exempt:true}},
-{confirmDate:'2026-03-08',plate:'沪A·66666',vin:'LFV2A21509F567890',vid:'1705143390',contractType:'委拍',inspected:'是',status:'已清分',paid:'已付款',aftersale:'无',responsibility:'-',dealPrice:28000,contractPrice:26000,startPrice:24000,store:'上海浦东',region:'贵州-贵阳',subRegion:'贵州-贵阳',totalProfit:3200,weipuProfit:0,weipuyunProfit:0,huiheProfit:0,jipaProfit:3200,serviceFee:600,evalFee:150,inspCost:85,salesCost:200,assessor:'冯十二',regionMgr:'陈十三',vp:'褚十四',dept:'车源部',bizFee:0,loanInterest:0,inboundTime:'2026-03-01',inboundLoc:'贵州服务中心',pickupFee:100,pickupPerson:'赵磊',pickupType:'自提',deliveryCost:0,deliveryDept:'-',airDeliveryCost:0,airDeliveryDept:'-',airDeliveryFollower:'-',transferCost:0,transferDept:'-',inspector:'卫十五',dataCost:10,siteFee:0,repoCost:0,perfProfit:2520,perfSalary:0,aftersaleRecord:null}
+{confirmDate:'2026-03-02',plate:'粤B·12345',vin:'LFV2A2150J3123456',vid:'1705143374',contractType:'委拍',inspected:'是',status:'过户回收',paid:'已付款',aftersale:'无',responsibility:'-',dealPrice:50000,contractPrice:48000,startPrice:45000,store:'深圳南沙',region:'广东-深圳',subRegion:'广东-深圳',totalProfit:6000,weipuProfit:6000,weipuyunProfit:0,huiheProfit:0,jipaProfit:0,serviceFee:200,evalFee:1000,inspCost:85,salesCost:300,assessor:'王五',regionMgr:'张三',vp:'李四',dept:'车源部',bizFee:0,loanInterest:0,inboundTime:'2026-02-10',inboundLoc:'深圳服务中心',pickupFee:100,pickupPerson:'陈小明',pickupType:'自提',deliveryCost:150,deliveryDept:'南沙服务中心',airDeliveryCost:0,airDeliveryDept:'-',airDeliveryFollower:'-',transferCost:350,transferDept:'南沙服务中心',inspector:'李五',dataCost:10,siteFee:0,repoCost:0,perfProfit:4705,perfSalary:0,aftersaleRecord:null},
+{confirmDate:'',plate:'粤A·22222',vin:'LFV2A21509C234567',vid:'1705143376',contractType:'收购',inspected:'是',status:'检测过审',paid:'',aftersale:'无',responsibility:'-',dealPrice:0,contractPrice:80000,startPrice:75000,store:'佛山汇和广州分公司',region:'广东-广州',subRegion:'番禺区域',totalProfit:0,weipuProfit:0,weipuyunProfit:0,huiheProfit:0,jipaProfit:0,serviceFee:0,evalFee:0,inspCost:120,salesCost:0,assessor:'赵六',regionMgr:'钱七',vp:'孙八',dept:'车源部',bizFee:0,loanInterest:0,inboundTime:'2026-02-20',inboundLoc:'白云服务中心',pickupFee:100,pickupPerson:'刘大力',pickupType:'第三方',deliveryCost:0,deliveryDept:'-',airDeliveryCost:0,airDeliveryDept:'-',airDeliveryFollower:'-',transferCost:0,transferDept:'-',inspector:'周九',dataCost:15,siteFee:0,repoCost:0,perfProfit:-235,perfSalary:0,aftersaleRecord:null},
+{confirmDate:'2026-03-06',plate:'粤B·55555',vin:'LFV2A21509D345678',vid:'1705143380',contractType:'委拍',inspected:'是',status:'售后完成',paid:'已付款',aftersale:'售后退车',responsibility:'车源部',dealPrice:42000,contractPrice:40000,startPrice:38000,store:'深圳福田',region:'广东-深圳',subRegion:'南山片区',totalProfit:4500,weipuProfit:4500,weipuyunProfit:0,huiheProfit:0,jipaProfit:0,serviceFee:800,evalFee:200,inspCost:85,salesCost:300,assessor:'吴十',regionMgr:'张三',vp:'李四',dept:'车源部',bizFee:500,loanInterest:0,inboundTime:'2026-02-15',inboundLoc:'1库',pickupFee:100,pickupPerson:'张伟',pickupType:'自提',deliveryCost:150,deliveryDept:'福田服务中心',airDeliveryCost:0,airDeliveryDept:'-',airDeliveryFollower:'-',transferCost:350,transferDept:'福田服务中心',inspector:'郑十一',dataCost:10,siteFee:0,repoCost:0,perfProfit:-1495,perfSalary:0,aftersaleRecord:{reason:'车辆质量问题',responsibility:'车源生态事业部',extraLoss:0,exempt:false}},
+{confirmDate:'2026-03-07',plate:'粤A·88888',vin:'LFV2A21509E456789',vid:'1705143385',contractType:'委拍',inspected:'是',status:'售后完成',paid:'已付款',aftersale:'售后不退车',responsibility:'检测部门',dealPrice:38000,contractPrice:36000,startPrice:34000,store:'广州番禺',region:'广东-广州',subRegion:'番禺区域',totalProfit:3800,weipuProfit:0,weipuyunProfit:3800,huiheProfit:0,jipaProfit:0,serviceFee:700,evalFee:200,inspCost:85,salesCost:200,assessor:'赵六',regionMgr:'钱七',vp:'孙八',dept:'车源部',bizFee:300,loanInterest:0,inboundTime:'2026-02-05',inboundLoc:'广州南沙库',pickupFee:100,pickupPerson:'王强',pickupType:'第三方',deliveryCost:150,deliveryDept:'番禺服务中心',airDeliveryCost:0,airDeliveryDept:'-',airDeliveryFollower:'-',transferCost:350,transferDept:'番禺服务中心',inspector:'周九',dataCost:10,siteFee:0,repoCost:0,perfProfit:2505,perfSalary:0,aftersaleRecord:{reason:'检测遗漏问题',responsibility:'检测部门',extraLoss:0,exempt:true}},
+{confirmDate:'2026-03-08',plate:'沪A·66666',vin:'LFV2A21509F567890',vid:'1705143390',contractType:'委拍',inspected:'是',status:'成交付款',paid:'已付款',aftersale:'无',responsibility:'-',dealPrice:28000,contractPrice:26000,startPrice:24000,store:'上海浦东',region:'贵州-贵阳',subRegion:'贵州-贵阳',totalProfit:3200,weipuProfit:0,weipuyunProfit:0,huiheProfit:0,jipaProfit:3200,serviceFee:600,evalFee:150,inspCost:85,salesCost:200,assessor:'冯十二',regionMgr:'陈十三',vp:'褚十四',dept:'车源部',bizFee:0,loanInterest:0,inboundTime:'2026-03-01',inboundLoc:'贵州服务中心',pickupFee:100,pickupPerson:'赵磊',pickupType:'自提',deliveryCost:0,deliveryDept:'-',airDeliveryCost:0,airDeliveryDept:'-',airDeliveryFollower:'-',transferCost:0,transferDept:'-',inspector:'卫十五',dataCost:10,siteFee:0,repoCost:0,perfProfit:2520,perfSalary:0,aftersaleRecord:null}
 ];
 function fmt(n){return n===0?'<span style="color:#94a3b8">—</span>':n.toLocaleString('zh-CN')}
 function fmtRaw(n){return n===0?'—':n.toLocaleString('zh-CN')}
 function profitClass(n){return n>0?'num pos':n<0?'num neg':'num muted'}
-function statusBadge(s){const m={'已入库':'badge-gray','已检测':'badge-yellow','已上拍':'badge-orange','已成交':'badge-blue','已清分':'badge-blue','已交付':'badge-green','已过户':'badge-green','已售后':'badge-red'};return `<span class="badge ${m[s]||'badge-gray'}">${s}</span>`}
+function statusBadge(s){const m={'数据查询':'badge-gray','入唯普库':'badge-gray','检测过审':'badge-yellow','成交付款':'badge-blue','交付出库':'badge-green','过户回收':'badge-green','售后完成':'badge-red'};return `<span class="badge ${m[s]||'badge-gray'}">${s}</span>`}
 function renderDashboard(){
     const sc=`background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px 16px;`;
     const numS=`font-size:22px;font-weight:700;font-family:var(--mono);`;
@@ -575,7 +575,7 @@ function openDetail(idx){
             <div class="info-field"><span class="label">VIN码</span><span class="value mono" style="font-size:11px">${r.vin}</span></div>
             <div class="info-field"><span class="label">VID</span><span class="value mono">${r.vid}</span></div>
             <div class="info-field"><span class="label">合同类型</span><span class="value">${r.contractType}</span></div>
-            <div class="info-field"><span class="label">车辆状态</span><span class="value">${r.status}</span></div>
+            <div class="info-field"><span class="label">关键事件</span><span class="value">${r.status}</span></div>
             <div class="info-field"><span class="label">付款状态</span><span class="value">${r.paid}</span></div>
             <div class="info-field"><span class="label">门店</span><span class="value">${r.store}</span></div>
             <div class="info-field"><span class="label">评估师</span><span class="value">${r.assessor}</span></div>
@@ -658,7 +658,7 @@ function renderCases(){
     const th=`<thead><tr style="background:#1e3a5f;color:white;">
         <th style="padding:9px 12px;text-align:center;font-weight:600;">日期</th>
         <th style="padding:9px 12px;text-align:center;font-weight:600;">车牌</th>
-        <th style="padding:9px 12px;text-align:center;font-weight:600;">车辆状态</th>
+        <th style="padding:9px 12px;text-align:center;font-weight:600;">关键事件</th>
         <th style="padding:9px 12px;text-align:center;font-weight:600;">付款状态</th>
         <th style="padding:9px 12px;text-align:right;font-weight:600;">成交价</th>
         <th style="padding:9px 12px;text-align:right;font-weight:600;">交易总毛利</th>
@@ -683,15 +683,15 @@ function renderCases(){
         <table style="border-collapse:collapse;width:100%;font-size:12px;min-width:900px;">
             ${th}<tbody>
             ${sectionHeader('T1 入库（3/8 09:30）— 仅提车费计入','green')}
-            ${caseRow('3/8','B12345','已入库','yellow','—','—','0','#94a3b8','0','0','100','0','0','0','0','0','-100','#dc2626','T1仅计提车费100元')}
+            ${caseRow('3/8','B12345','入唯普库','yellow','—','—','0','#94a3b8','0','0','100','0','0','0','0','0','-100','#dc2626','T1仅计提车费100元')}
             ${sectionHeader('T2 检测过审（3/8 14:20）— 检测成本+数据成本计入','green')}
-            ${caseRow('3/8','B12345','已检测','yellow','—','—','0','#94a3b8','0','85','100','0','0','0','0','10','-195','#dc2626','省内85元+数据成本10元')}
+            ${caseRow('3/8','B12345','检测过审','yellow','—','—','0','#94a3b8','0','85','100','0','0','0','0','10','-195','#dc2626','省内85元+数据成本10元')}
             ${sectionHeader('T3 付款完成（3/10 15:00）— 毛利清分+业务合作费计入','green')}
             ${caseRow('3/10','B12345','已付款','blue','已付款','50,000','6,000','#16a34a','6,000','85','100','0','0','0','0','10','+5,505','#16a34a','毛利6000+业务合作费0，销售成本300计入')}
             ${sectionHeader('T4 交付型出库（3/10 16:00）— 现场交付成本计入','green')}
-            ${caseRow('3/10','B12345','已交付','green','已付款','50,000','6,000','#16a34a','6,000','85','100','150','0','0','0','10','+5,355','#16a34a','现场交付成本150元')}
+            ${caseRow('3/10','B12345','交付出库','green','已付款','50,000','6,000','#16a34a','6,000','85','100','150','0','0','0','10','+5,355','#16a34a','现场交付成本150元')}
             ${sectionHeader('T5 过户资料回收（3/11 11:30）— 过户成本计入','green')}
-            ${caseRow('3/11','B12345','已交付','green','已付款','50,000','6,000','#16a34a','6,000','85','100','150','0','350','0','10','+5,005','#16a34a','现场过户350元')}
+            ${caseRow('3/11','B12345','过户回收','green','已付款','50,000','6,000','#16a34a','6,000','85','100','150','0','350','0','10','+5,005','#16a34a','现场过户350元')}
             </tbody>
         </table>
     </div>
@@ -851,11 +851,11 @@ function renderCases(){
         <table style="border-collapse:collapse;width:100%;font-size:12px;min-width:900px;">
             ${th}<tbody>
             ${sectionHeader('2月 — 入库+检测（成本先行）','green')}
-            ${caseRow('2/15','D99999','已入库','yellow','—','—','0','#94a3b8','0','0','100','0','0','0','0','0','-100','#dc2626','T1入库，提车费100元计入2月')}
-            ${caseRow('2/18','D99999','已检测','yellow','—','—','0','#94a3b8','0','85','100','0','0','0','0','0','-185','#dc2626','T2检测过审，省内85元计入2月')}
+            ${caseRow('2/15','D99999','入唯普库','yellow','—','—','0','#94a3b8','0','0','100','0','0','0','0','0','-100','#dc2626','T1入库，提车费100元计入2月')}
+            ${caseRow('2/18','D99999','检测过审','yellow','—','—','0','#94a3b8','0','85','100','0','0','0','0','0','-185','#dc2626','T2检测过审，省内85元计入2月')}
             ${sectionHeader('3月 — 成交+付款+交付（毛利确认）','green')}
             ${caseRow('3/6','D99999','已付款','blue','已付款','55,000','7,200','#16a34a','7,200','0','0','0','0','0','0','0','+6,700','#16a34a','付款清分，3月无检测/提车成本（已在2月计入）')}
-            ${caseRow('3/7','D99999','已交付','green','已付款','55,000','7,200','#16a34a','7,200','0','0','150','0','350','0','10','+6,190','#16a34a','现场交付150+过户350+数据10计入3月')}
+            ${caseRow('3/7','D99999','交付出库','green','已付款','55,000','7,200','#16a34a','7,200','0','0','150','0','350','0','10','+6,190','#16a34a','现场交付150+过户350+数据10计入3月')}
             </tbody>
         </table>
     </div>
