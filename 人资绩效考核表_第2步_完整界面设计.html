@@ -328,7 +328,7 @@ const fieldDefs=[
 ['VIN 码','车辆识别代号，17 位'],
 ['VID','唯普系统内部车辆 ID'],
 ['合同类型','委拍 或 收购'],
-['关键事件','数据写入时机点：已入库→检测过审→数据查询→已清分→现场交付→空中交付→现场过户'],
+['关键事件','数据写入时机点：已入库→检测过审→数据查询→已清分→现场交付→空中交付→现场过户→售后退车/售后不退车'],
 ['责任方','售后时的责任归属部门(仅取值到部门，eg.车源生态部)'],
 ['清分日期','订单清分完成日期（yyyy-mm-dd）'],
 ['成交价','拍卖成交价格'],
@@ -388,7 +388,7 @@ const rows=[
 function fmt(n){return n===0?'<span style="color:#94a3b8">—</span>':n.toLocaleString('zh-CN')}
 function fmtRaw(n){return n===0?'—':n.toLocaleString('zh-CN')}
 function profitClass(n){return n>0?'num pos':n<0?'num neg':'num muted'}
-function statusBadge(s){const m={'已入库':'badge-gray','检测过审':'badge-yellow','数据查询':'badge-gray','已清分':'badge-blue','现场交付':'badge-green','空中交付':'badge-green','现场过户':'badge-green'};return `<span class="badge ${m[s]||'badge-gray'}">${s}</span>`}
+function statusBadge(s){const m={'已入库':'badge-gray','检测过审':'badge-yellow','数据查询':'badge-gray','已清分':'badge-blue','现场交付':'badge-green','空中交付':'badge-green','现场过户':'badge-green','售后退车':'badge-red','售后不退车':'badge-orange'};return `<span class="badge ${m[s]||'badge-gray'}">${s}</span>`}
 function renderDashboard(){
     const sc=`background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px 16px;`;
     const numS=`font-size:22px;font-weight:700;font-family:var(--mono);`;
