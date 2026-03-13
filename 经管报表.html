@@ -85,8 +85,8 @@
             <div class="sidebar-section-label">报表管理</div>
             <div class="sidebar-item active" onclick="backToReport(this)"><span class="icon">📈</span> 经管报表</div>
             <div class="sidebar-item" onclick="showCostDetailFromSidebar(this)"><span class="icon">📋</span> 费用明细</div>
-            <div class="sidebar-item" onclick="showFinanceRevenueFromSidebar(this)"><span class="icon">💰</span> 财务系统-收益明细</div>
             <div class="sidebar-item" onclick="location.href='人资绩效考核表_第2步_完整界面设计.html'"><span class="icon">🚗</span> 车源绩效表</div>
+            <div class="sidebar-item" onclick="showFinanceRevenueFromSidebar(this)"><span class="icon">💰</span> 财务系统-收益明细</div>
         </div>
     </div>
     <div class="main">
@@ -219,6 +219,25 @@
             </div>
             <div class="table-footer"><div style="color:#000;font-size:11px;">费用明细</div><div id="costDetailCount"></div></div>
         </div>
+        <!-- 财务系统-收益明细子页面 -->
+        <div id="financeRevenuePage" style="display:none;flex:1;flex-direction:column;background:var(--card-bg);border:1px solid var(--border);border-radius:10px;overflow:hidden;min-height:0">
+            <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;background:#fff;flex-shrink:0;justify-content:space-between">
+                <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+                    <label style="font-size:12px;font-weight:600;color:#000;white-space:nowrap">确认日期：</label>
+                    <input type="date" value="2026-03-01" style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:var(--sans)">
+                    <span style="font-size:11px;color:#000">-</span>
+                    <input type="date" value="2026-03-31" style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:var(--sans)">
+                    <button class="btn btn-blue" onclick="renderFinanceRevenueTable()">数据预览</button>
+                    <button class="btn btn-export" onclick="doExport()">导出</button>
+                </div>
+                <div><button class="btn" style="background:#dc2626;color:#fff;" onclick="document.getElementById('frReqNote').style.display=document.getElementById('frReqNote').style.display==='none'?'block':'none'">需求点</button></div>
+            </div>
+            <div id="frReqNote" style="display:none;padding:12px 16px;background:#fff5f5;border-bottom:1px solid #fca5a5;font-size:12.5px;color:#dc2626;line-height:1.8;">
+                <b>汇和收益调整</b>：收益明细中涉及汇和收益的字段需关注取值逻辑变更。
+            </div>
+            <div class="table-outer"><table id="financeRevenueTable"></table></div>
+            <div class="table-footer"><div style="color:#000;font-size:11px;">收益明细</div><div id="financeRevenueCount"></div></div>
+        </div>
         </div>
     </div>
 <!-- 导出模板弹窗 -->
@@ -263,27 +282,6 @@
       </div>
     </div>
   </div>
-</div>
-<!-- 财务系统-收益明细子页面 -->
-<div id="financeRevenuePage" style="display:none;flex:1;flex-direction:column;background:var(--card-bg);border:1px solid var(--border);border-radius:10px;overflow:hidden;min-height:0">
-  <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;background:#fff;flex-shrink:0">
-    <label style="font-size:12px;font-weight:600;color:#000;white-space:nowrap">确认日期：</label>
-    <input type="date" value="2026-03-01" style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:var(--sans)">
-    <span style="font-size:11px;color:#000">-</span>
-    <input type="date" value="2026-03-31" style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:var(--sans)">
-    <button class="btn btn-blue">数据预览</button>
-    <button class="btn btn-export">导出</button>
-    <button class="btn" style="background:#dc2626;color:#fff;" onclick="document.getElementById('finReqNote').style.display=document.getElementById('finReqNote').style.display==='none'?'block':'none'">需求点</button>
-    <span class="filter-note">注：性能考虑，数据预览只提供前100条预览，具体数据请导出</span>
-  </div>
-  <div id="finReqNote" style="display:none;padding:12px 16px;background:#fff5f5;border-bottom:1px solid #fca5a5;font-size:12.5px;color:#dc2626;line-height:1.8;">
-    <strong>需求点说明：汇和收益调整</strong><br>
-    调整汇和毛利取值逻辑，由原有1部分调整为4部分之和：<br>
-    汇和毛利 = ① 原有汇和收益 + ② 门店自垫款收益 + ③ 零售衍生收入 + ④ 门店自垫款订单调账<br>
-    详见「车源绩效表」汇和毛利字段说明。
-  </div>
-  <div class="table-outer"><table id="financeRevenueTable"></table></div>
-  <div class="table-footer"><div style="color:#000;font-size:11px;">数据预览（前100条）</div><div id="financeRevenueCount"></div></div>
 </div>
 <script>
 const D=[
@@ -742,7 +740,37 @@ function backToReport(el){
 }
 
 // 财务系统-收益明细
-const financeRevenueCols=['确认日期','来源','订单号','订单类型','车牌','总价','成交价','门店','集团收益','集团收益账户','中间商费用','唯普毛利(唯普+唯普云)','唯普','唯普云','分成','平台使用费','综合服务费','其他费','评估费','交付服务费','查验费','按揭服务费','车辆延保费','整备服务费'];
+const financeRevenueGroups=[
+  {name:'',span:7},
+  {name:'买家',span:3},
+  {name:'卖家',span:3},
+  {name:'门店',span:3},
+  {name:'',span:3},
+  {name:'唯普',span:13},
+  {name:'',span:8}
+];
+const financeRevenueCols=[
+  {k:'f0',l:'确认日期'},{k:'f1',l:'来源'},{k:'f2',l:'订单号'},{k:'f3',l:'订单类型'},{k:'f4',l:'车牌'},{k:'f5',l:'总价'},{k:'f6',l:'成交价'},
+  {k:'f7',l:'姓名'},{k:'f8',l:'子账号'},{k:'f9',l:'支付金额'},
+  {k:'f10',l:'姓名'},{k:'f11',l:'子账号'},{k:'f12',l:'收款金额'},
+  {k:'f13',l:'名称'},{k:'f14',l:'子账号'},{k:'f15',l:'收款金额'},
+  {k:'f16',l:'集团收益'},{k:'f17',l:'集团收益账户'},{k:'f18',l:'中间商费用'},
+  {k:'f19',l:'毛利(唯普+唯普云)'},{k:'f20',l:'唯普'},{k:'f21',l:'唯普云'},{k:'f22',l:'分成'},{k:'f23',l:'平台使用费'},{k:'f24',l:'综合服务费'},{k:'f25',l:'其他费'},{k:'f26',l:'评估费'},{k:'f27',l:'交付服务费'},{k:'f28',l:'查验费'},{k:'f29',l:'按揭服务费'},{k:'f30',l:'车辆延保费'},{k:'f31',l:'整备服务费'},
+  {k:'f32',l:'评估师'},{k:'f33',l:'区域经理'},{k:'f34',l:'大区域'},{k:'f35',l:'小区域'},{k:'f36',l:'事业部'},{k:'f37',l:'是否自营'},{k:'f38',l:'是否查验'},{k:'f39',l:'当前库存'}
+];
+const financeRevenueData=[
+  {f0:'2026-03-13 16:14:26',f1:'订单仲裁',f2:'447719',f3:'专场拍',f4:'粤ADQ8030',f5:'0.00',f6:'0.00',f7:'王鹏鹏',f8:'2503083',f9:'50000.00',f10:'',f11:'',f12:'0.00',f13:'广州机动车拍卖中心有限公司（pm02）',f14:'1904160176',f15:'0.00',f16:'0.00',f17:'',f18:'0.00',f19:'-50000.00',f20:'-50000.00',f21:'0.00',f22:'-50000.00',f23:'0.00',f24:'0.00',f25:'0.00',f26:'0.00',f27:'0.00',f28:'0.00',f29:'0.00',f30:'0.00',f31:'0.00',f32:'陈加文',f33:'管理员（张）、陈加文、周正路',f34:'拓展政企',f35:'广东-广州',f36:'唯普自营',f37:'是',f38:'是',f39:''},
+  {f0:'2026-03-13 15:40:26',f1:'订单调账',f2:'450662',f3:'竞价大厅',f4:'粤S5G63E',f5:'0.00',f6:'0.00',f7:'广东运通报废车辆回收拆解有限公司',f8:'2409242822',f9:'0.00',f10:'刘铠鸣',f11:'2603080016',f12:'-1100.00',f13:'理想汽车广东交付中心',f14:'2508120101',f15:'0.00',f16:'1100.00',f17:'汇和收益',f18:'0.00',f19:'0.00',f20:'0.00',f21:'0.00',f22:'0.00',f23:'0.00',f24:'0.00',f25:'0.00',f26:'0.00',f27:'0.00',f28:'0.00',f29:'0.00',f30:'0.00',f31:'0.00',f32:'吴嘉华',f33:'林家杰、业务员1',f34:'2-广东-东莞',f35:'广东-东莞',f36:'理想汽车',f37:'否',f38:'否',f39:'东莞|A区'},
+  {f0:'2026-03-13 09:35:32',f1:'订单成交',f2:'450675',f3:'竞价大厅',f4:'粤ET2Q98',f5:'60500.00',f6:'60200.00',f7:'陈丽萍（佛山君奥）',f8:'2509170034',f9:'-60500.00',f10:'程红红',f11:'2602260007',f12:'0.00',f13:'佛山市广物君奥汽车贸易有限公司',f14:'2503059804',f15:'60200.00',f16:'0.00',f17:'汇和收益',f18:'0.00',f19:'300.00',f20:'300.00',f21:'0.00',f22:'0.00',f23:'300.00',f24:'0.00',f25:'0.00',f26:'0.00',f27:'0.00',f28:'0.00',f29:'0.00',f30:'0.00',f31:'0.00',f32:'陈观福',f33:'王启才、王惠珊、业务员1',f34:'置换一部',f35:'广东-佛山A',f36:'一汽大众',f37:'是',f38:'是',f39:'佛山君奥3|A区'},
+  {f0:'2026-03-13 11:57:07',f1:'订单成交',f2:'450778',f3:'专场拍',f4:'粤AM5850',f5:'35442.00',f6:'33182.00',f7:'林知良',f8:'2603030018',f9:'-35442.00',f10:'',f11:'',f12:'0.00',f13:'广州机动车拍卖中心有限公司（pm02）',f14:'1904160176',f15:'33482.00',f16:'0.00',f17:'',f18:'0.00',f19:'1960.00',f20:'1960.00',f21:'0.00',f22:'1360.00',f23:'600.00',f24:'0.00',f25:'0.00',f26:'0.00',f27:'0.00',f28:'0.00',f29:'0.00',f30:'0.00',f31:'0.00',f32:'广东唯普汽车科技股份有限公司-政企（门店）',f33:'管理员（张）、陈加文、周正路',f34:'拓展政企',f35:'广东-广州',f36:'唯普自营',f37:'是',f38:'是',f39:''},
+  {f0:'2026-03-13 09:03:33',f1:'订单仲裁',f2:'450780',f3:'竞价大厅',f4:'粤LD20881',f5:'0.00',f6:'0.00',f7:'惠州市辉达实业有限公司',f8:'2012027932',f9:'0.00',f10:'惠州市辉达星瑞汽车有限公司（门店）',f11:'2508140048',f12:'0.00',f13:'惠州市辉达星悦二手车交易服务有限公司',f14:'2508070095',f15:'0.00',f16:'0.00',f17:'',f18:'0.00',f19:'0.00',f20:'0.00',f21:'0.00',f22:'0.00',f23:'0.00',f24:'0.00',f25:'0.00',f26:'0.00',f27:'0.00',f28:'0.00',f29:'0.00',f30:'0.00',f31:'0.00',f32:'惠州小唯',f33:'朱巧红、业务员1',f34:'2-广东-惠州',f35:'广东-惠州',f36:'辉达集团',f37:'是',f38:'是',f39:'车世界辉达|A区'},
+  {f0:'2026-03-13 16:14:30',f1:'订单仲裁',f2:'450788',f3:'竞价大厅',f4:'粤A56LQ7',f5:'0.00',f6:'0.00',f7:'刘庆（广东粤奥）',f8:'1904100089',f9:'0.00',f10:'',f11:'',f12:'0.00',f13:'广东粤奥汽车销售服务有限公司',f14:'2503059797',f15:'0.00',f16:'0.00',f17:'汇和收益',f18:'0.00',f19:'0.00',f20:'0.00',f21:'0.00',f22:'0.00',f23:'0.00',f24:'0.00',f25:'0.00',f26:'0.00',f27:'0.00',f28:'0.00',f29:'0.00',f30:'0.00',f31:'0.00',f32:'售后顾问',f33:'王惠珊、杨汉颖、业务员1',f34:'置换一部',f35:'广东-广州',f36:'一汽大众',f37:'是',f38:'是',f39:'广东粤奥2|A区'},
+  {f0:'2026-03-13 13:56:48',f1:'订单减免',f2:'450804',f3:'竞价大厅',f4:'粤A09C8L',f5:'0.00',f6:'0.00',f7:'李华',f8:'2101169058',f9:'0.00',f10:'广东物产汽车租赁有限公司',f11:'1904160232',f12:'0.00',f13:'广东富利全汽车租赁有限公司',f14:'1904160225',f15:'0.00',f16:'0.00',f17:'汇和收益',f18:'0.00',f19:'0.00',f20:'0.00',f21:'0.00',f22:'0.00',f23:'-200.00',f24:'0.00',f25:'0.00',f26:'0.00',f27:'0.00',f28:'0.00',f29:'0.00',f30:'0.00',f31:'0.00',f32:'杨泽明',f33:'杨汉颖、业务员1',f34:'置换一部',f35:'广东-广州',f36:'运营中心',f37:'是',f38:'是',f39:'入唯普库'},
+  {f0:'2026-03-13 18:18:56',f1:'订单仲裁',f2:'450813',f3:'竞价大厅',f4:'鄂A51VQ1',f5:'0.00',f6:'0.00',f7:'栾仲举',f8:'2506053842',f9:'-2000.00',f10:'',f11:'',f12:'0.00',f13:'武汉市盛世王朝汽车销售有限公司东西湖区分公司-比亚迪',f14:'2508150011',f15:'1200.00',f16:'0.00',f17:'',f18:'0.00',f19:'800.00',f20:'800.00',f21:'0.00',f22:'800.00',f23:'0.00',f24:'0.00',f25:'0.00',f26:'0.00',f27:'0.00',f28:'0.00',f29:'0.00',f30:'0.00',f31:'0.00',f32:'叶升（专职查验）',f33:'黄何、业务员1',f34:'3-湖北-武汉',f35:'湖北-武汉',f36:'武汉盛世王朝',f37:'是',f38:'是',f39:'东西湖盛世王朝比亚迪|A区'},
+  {f0:'2026-03-13 16:14:36',f1:'订单仲裁',f2:'450823',f3:'竞价大厅',f4:'粤E672KD',f5:'0.00',f6:'0.00',f7:'广物汇和零售中心采购',f8:'2210270120',f9:'0.00',f10:'佛山市广物君乐汽车销售服务有限公司（门店）',f11:'1904132463',f12:'0.00',f13:'佛山广物汇和汽车服务有限公司（白云展厅）',f14:'1904100147',f15:'0.00',f16:'0.00',f17:'汇和收益',f18:'0.00',f19:'0.00',f20:'0.00',f21:'0.00',f22:'0.00',f23:'0.00',f24:'0.00',f25:'0.00',f26:'0.00',f27:'0.00',f28:'0.00',f29:'0.00',f30:'0.00',f31:'0.00',f32:'罗锡基',f33:'杨汉颖、业务员1',f34:'交易中心',f35:'广东-广州（零售）',f36:'运营中心',f37:'是',f38:'是',f39:'汇和白云展厅|A区'},
+  {f0:'2026-03-13 16:15:03',f1:'订单仲裁',f2:'450860',f3:'竞价大厅',f4:'粤KA188D',f5:'0.00',f6:'0.00',f7:'广东国宏盈通实业有限公司（报废商）',f8:'2207227160',f9:'3300.00',f10:'',f11:'',f12:'0.00',f13:'一汽新能源汽车销售（广州）有限公司',f14:'2509170041',f15:'-3000.00',f16:'0.00',f17:'',f18:'0.00',f19:'-300.00',f20:'-300.00',f21:'0.00',f22:'-300.00',f23:'0.00',f24:'0.00',f25:'0.00',f26:'0.00',f27:'0.00',f28:'0.00',f29:'0.00',f30:'0.00',f31:'0.00',f32:'黄秀敏',f33:'唐斌、黄建福、业务员1',f34:'1-广东-广州',f35:'广东-广州',f36:'非集团门店',f37:'是',f38:'否',f39:'重新发布车辆'},
+  {f0:'2026-03-13 16:17:10',f1:'订单成交',f2:'450921',f3:'竞价大厅',f4:'粤E672KD',f5:'92500.00',f6:'90000.00',f7:'牟文龙',f8:'2402284914',f9:'-92500.00',f10:'佛山市广物君乐汽车销售服务有限公司（门店）',f11:'1904132463',f12:'90000.00',f13:'佛山广物汇和汽车服务有限公司（白云展厅）',f14:'1904100147',f15:'0.00',f16:'0.00',f17:'汇和收益',f18:'0.00',f19:'2500.00',f20:'2500.00',f21:'0.00',f22:'1000.00',f23:'500.00',f24:'800.00',f25:'0.00',f26:'200.00',f27:'0.00',f28:'0.00',f29:'0.00',f30:'0.00',f31:'0.00',f32:'罗锡基',f33:'杨汉颖、业务员1',f34:'交易中心',f35:'广东-广州（零售）',f36:'运营中心',f37:'是',f38:'是',f39:'汇和白云展厅|A区'}
+];
 function showFinanceRevenue(){
   document.querySelector('.tabs-wrap').style.display='none';
   document.getElementById('costDetailPage').style.display='none';
@@ -760,13 +788,99 @@ function hideFinanceRevenue(){
 }
 function renderFinanceRevenueTable(){
   const t=document.getElementById('financeRevenueTable');
-  let h='<thead><tr>';
-  financeRevenueCols.forEach(c=>{h+='<th>'+c+'</th>';});
+  const totalCols=financeRevenueCols.length;
+  let h='<thead>';
+  // Group header row
+  h+='<tr>';
+  financeRevenueGroups.forEach(g=>{
+    if(g.name===''){
+      for(let i=0;i<g.span;i++) h+='<th rowspan="2" style="min-width:80px"></th>';
+    } else {
+      let bg='';
+      if(g.name==='买家') bg='background:#e0f2fe;';
+      else if(g.name==='卖家') bg='background:#fef3c7;';
+      else if(g.name==='门店') bg='background:#dcfce7;';
+      else if(g.name==='唯普') bg='background:#f3e8ff;';
+      h+='<th colspan="'+g.span+'" style="'+bg+'text-align:center">'+g.name+'</th>';
+    }
+  });
+  h+='</tr>';
+  // Sub header row
+  h+='<tr>';
+  let idx=0;
+  financeRevenueGroups.forEach(g=>{
+    if(g.name!==''){
+      for(let i=0;i<g.span;i++){
+        let bg='';
+        if(g.name==='买家') bg='background:#e0f2fe;';
+        else if(g.name==='卖家') bg='background:#fef3c7;';
+        else if(g.name==='门店') bg='background:#dcfce7;';
+        else if(g.name==='唯普') bg='background:#f3e8ff;';
+        h+='<th style="'+bg+'min-width:80px">'+financeRevenueCols[idx+i].l+'</th>';
+      }
+    }
+    idx+=g.span;
+  });
+  h+='</tr>';
+  // Fill in rowspan=2 headers
+  let h2='';idx=0;
+  financeRevenueGroups.forEach(g=>{
+    if(g.name===''){
+      for(let i=0;i<g.span;i++){
+        h2+='<th rowspan="2" style="min-width:80px">'+financeRevenueCols[idx+i].l+'</th>';
+      }
+    }
+    idx+=g.span;
+  });
+  // Rebuild properly
+  h='<thead><tr>';
+  idx=0;
+  financeRevenueGroups.forEach(g=>{
+    if(g.name===''){
+      for(let i=0;i<g.span;i++){
+        h+='<th rowspan="2" style="min-width:80px">'+financeRevenueCols[idx+i].l+'</th>';
+      }
+    } else {
+      let bg='';
+      if(g.name==='买家') bg='background:#e0f2fe;';
+      else if(g.name==='卖家') bg='background:#fef3c7;';
+      else if(g.name==='门店') bg='background:#dcfce7;';
+      else if(g.name==='唯普') bg='background:#f3e8ff;';
+      h+='<th colspan="'+g.span+'" style="'+bg+'text-align:center">'+g.name+'</th>';
+    }
+    idx+=g.span;
+  });
+  h+='</tr><tr>';
+  idx=0;
+  financeRevenueGroups.forEach(g=>{
+    if(g.name!==''){
+      for(let i=0;i<g.span;i++){
+        let bg='';
+        if(g.name==='买家') bg='background:#e0f2fe;';
+        else if(g.name==='卖家') bg='background:#fef3c7;';
+        else if(g.name==='门店') bg='background:#dcfce7;';
+        else if(g.name==='唯普') bg='background:#f3e8ff;';
+        h+='<th style="'+bg+'min-width:80px">'+financeRevenueCols[idx+i].l+'</th>';
+      }
+    }
+    idx+=g.span;
+  });
   h+='</tr></thead><tbody>';
-  h+='<tr><td colspan="'+financeRevenueCols.length+'" style="text-align:center;padding:40px 0;color:var(--text-muted)">暂无数据，请点击数据预览</td></tr>';
+  if(financeRevenueData.length===0){
+    h+='<tr><td colspan="'+totalCols+'" style="text-align:center;padding:40px 0;color:var(--text-muted)">暂无数据，请点击数据预览</td></tr>';
+  } else {
+    financeRevenueData.forEach(row=>{
+      h+='<tr>';
+      financeRevenueCols.forEach(c=>{
+        let v=row[c.k]; if(v===undefined||v===null) v='';
+        h+='<td>'+v+'</td>';
+      });
+      h+='</tr>';
+    });
+  }
   h+='</tbody>';
   t.innerHTML=h;
-  document.getElementById('financeRevenueCount').textContent='共 0 条';
+  document.getElementById('financeRevenueCount').textContent='共 '+financeRevenueData.length+' 条';
 }
 
 const highlightFees=['提车费','空中交付成本','现场交付成本','现场过户成本','政企场地费'];
@@ -1049,6 +1163,7 @@ renderConsignTable();
 renderStoreTable();
 renderRevenueTable();
 renderCostTable();
+renderFinanceRevenueTable();
 </script>
 </body>
 </html>
