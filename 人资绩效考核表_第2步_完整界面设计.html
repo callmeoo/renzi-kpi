@@ -314,7 +314,7 @@
                     <tr><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">成交率（去重）</td><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;line-height:1.6;">去重成交台次 ÷ 去重上拍台次，保留两位小数。<br><span style="color:#64748b;font-size:11px;">示例：192 / 242 ≈ 79.34%</span></td></tr>
                     <tr style="background:#fafbfc;"><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">检测台次</td><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;line-height:1.6;">统计周期内完成检测的记录数，<span style="color:#dc2626;font-weight:500;">不去重</span>（同一辆车可多次检测，每次分别计数）。<br><span style="color:#64748b;font-size:11px;">示例值：215 台</span></td></tr>
                     <tr><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">交易总毛利</td><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;line-height:1.6;">所有成交订单的毛利求和（唯普毛利 + 唯普云毛利 + 汇和毛利 + 机拍毛利）。<br><span style="color:#64748b;font-size:11px;">示例值：284,500 元</span></td></tr>
-                    <tr style="background:#fafbfc;"><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">绩效毛利</td><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;line-height:1.6;">用于绩效核算的毛利合计，即交易总毛利减去所有成本费用项后的最终金额。<br><span style="color:#64748b;font-size:11px;">示例值：198,350 元</span></td></tr>
+                    <tr style="background:#fafbfc;"><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">绩效毛利</td><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;line-height:1.6;">交易总毛利−所有成本费用项（提车费+检测成本+数据成本+销售成本+政企场地费+收购车成本+业务合作服务费+垫款利息+现场交付成本/空中交付成本+现场过户成本）。<br><span style="color:#64748b;font-size:11px;">示例值：198,350 元</span></td></tr>
                     <tr><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-weight:600;">售后台次</td><td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;line-height:1.6;">统计周期内发生售后问题的车辆台次，<span style="color:#dc2626;font-weight:500;">不去重</span>（同一台车可多次售后）。<br><span style="color:#64748b;font-size:11px;">示例值：5 台</span></td></tr>
                     <tr style="background:#fafbfc;"><td style="padding:8px 12px;font-weight:600;">售后退车台次</td><td style="padding:8px 12px;line-height:1.6;">售后中最终退车处理的台次，<span style="color:#dc2626;font-weight:500;">不去重</span>（同一台车可多次售后退车）。<br><span style="color:#64748b;font-size:11px;">示例值：3 台</span></td></tr>
                 </tbody>
@@ -379,7 +379,7 @@ const fieldDefs=[
 ['空中交付跟进人','点击资料回收完毕的操作人姓名'],
 ['现场过户成本','350元；T5过户资料回收完毕时，且过户费≠0时\\n现场过户：过户费≠0'],
 ['现场过户部门','执行过户的服务中心（唯普云服务站？待小欣确认）'],
-['绩效毛利','总毛利−所有成本费用项(提车费+检测成本+ 数据成本+ 销售成本 + 政企场地费 +收购车成本+业务合作费+中间商费用+现场交付成本/空中交付成本+现场过户成本)'],
+['绩效毛利','交易总毛利−所有成本费用项(提车费+检测成本+数据成本+销售成本+政企场地费+收购车成本+业务合作服务费+垫款利息+现场交付成本/空中交付成本+现场过户成本)'],
 ['绩效工资','人工核算，占位字段']
 ];
 const rows=[
@@ -466,7 +466,7 @@ function renderDashboard(){
                 ${card('#f0fdf4','#bbf7d0','成交率（去重）','79.34%','','#16a34a','去重成交台次 ÷ 去重上拍台次，保留2位小数')}
                 ${card('#f8fafc','#e2e8f0','检测台次',215,'台','','不排重统计的检测过审次数，延期不算，同月多次检测分别计数')}
                 ${card('#eff6ff','#bfdbfe','交易总毛利','284,500','元','#2563eb','唯普毛利+唯普云毛利+汇和毛利+机拍毛利的合计')}
-                ${card('#eff6ff','#bfdbfe','绩效毛利','198,350','元','#2563eb','交易总毛利减去所有成本费用项后的最终绩效金额')}
+                ${card('#eff6ff','#bfdbfe','绩效毛利','198,350','元','#2563eb','交易总毛利−所有成本费用项(提车费+检测成本+数据成本+销售成本+政企场地费+收购车成本+业务合作服务费+垫款利息+现场交付成本/空中交付成本+现场过户成本)')}
                 ${card('#fff1f2','#fecdd3','售后台次',5,'台','#dc2626','不排重统计的发生售后的车辆次数')}
                 ${card('#fff1f2','#fecdd3','售后退车台次',3,'台','#dc2626','不排重统计的售后退车车辆次数')}
             </div>
