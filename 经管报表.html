@@ -85,6 +85,7 @@
             <div class="sidebar-section-label">报表管理</div>
             <div class="sidebar-item active" onclick="backToReport(this)"><span class="icon">📈</span> 经管报表</div>
             <div class="sidebar-item" onclick="showCostDetailFromSidebar(this)"><span class="icon">📋</span> 费用明细</div>
+            <div class="sidebar-item" onclick="showFinanceRevenueFromSidebar(this)"><span class="icon">💰</span> 财务系统-收益明细</div>
             <div class="sidebar-item" onclick="location.href='人资绩效考核表_第2步_完整界面设计.html'"><span class="icon">🚗</span> 车源绩效表</div>
         </div>
     </div>
@@ -262,6 +263,27 @@
       </div>
     </div>
   </div>
+</div>
+<!-- 财务系统-收益明细子页面 -->
+<div id="financeRevenuePage" style="display:none;flex:1;flex-direction:column;background:var(--card-bg);border:1px solid var(--border);border-radius:10px;overflow:hidden;min-height:0">
+  <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;background:#fff;flex-shrink:0">
+    <label style="font-size:12px;font-weight:600;color:#000;white-space:nowrap">确认日期：</label>
+    <input type="date" value="2026-03-01" style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:var(--sans)">
+    <span style="font-size:11px;color:#000">-</span>
+    <input type="date" value="2026-03-31" style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:var(--sans)">
+    <button class="btn btn-blue">数据预览</button>
+    <button class="btn btn-export">导出</button>
+    <button class="btn" style="background:#dc2626;color:#fff;" onclick="document.getElementById('finReqNote').style.display=document.getElementById('finReqNote').style.display==='none'?'block':'none'">需求点</button>
+    <span class="filter-note">注：性能考虑，数据预览只提供前100条预览，具体数据请导出</span>
+  </div>
+  <div id="finReqNote" style="display:none;padding:12px 16px;background:#fff5f5;border-bottom:1px solid #fca5a5;font-size:12.5px;color:#dc2626;line-height:1.8;">
+    <strong>需求点说明：汇和收益调整</strong><br>
+    调整汇和毛利取值逻辑，由原有1部分调整为4部分之和：<br>
+    汇和毛利 = ① 原有汇和收益 + ② 门店自垫款收益 + ③ 零售衍生收入 + ④ 门店自垫款订单调账<br>
+    详见「车源绩效表」汇和毛利字段说明。
+  </div>
+  <div class="table-outer"><table id="financeRevenueTable"></table></div>
+  <div class="table-footer"><div style="color:#000;font-size:11px;">数据预览（前100条）</div><div id="financeRevenueCount"></div></div>
 </div>
 <script>
 const D=[
@@ -695,6 +717,7 @@ function closeTplModal(){
 function showCostDetail(){
   document.querySelector('.tabs-wrap').style.display='none';
   document.getElementById('costDetailPage').style.display='flex';
+  document.getElementById('financeRevenuePage').style.display='none';
   document.querySelector('.topbar-title').textContent='费用明细';
   document.querySelector('.topbar-breadcrumb').innerHTML='<span>首页</span><span class="sep">›</span><span>报表管理</span><span class="sep">›</span><span>费用明细</span>';
   renderCostDetailTable();
@@ -706,6 +729,7 @@ function showCostDetailFromSidebar(el){
 function hideCostDetail(){
   document.querySelector('.tabs-wrap').style.display='flex';
   document.getElementById('costDetailPage').style.display='none';
+  document.getElementById('financeRevenuePage').style.display='none';
   document.querySelector('.topbar-title').textContent='经管报表';
   document.querySelector('.topbar-breadcrumb').innerHTML='<span>报表管理</span><span class="sep">›</span><span>经管报表</span>';
   document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
@@ -714,7 +738,37 @@ function hideCostDetail(){
 function backToReport(el){
   setActive(el);
   hideCostDetail();
+  hideFinanceRevenue();
 }
+
+// 财务系统-收益明细
+const financeRevenueCols=['确认日期','来源','订单号','订单类型','车牌','总价','成交价','门店','集团收益','集团收益账户','中间商费用','唯普毛利(唯普+唯普云)','唯普','唯普云','分成','平台使用费','综合服务费','其他费','评估费','交付服务费','查验费','按揭服务费','车辆延保费','整备服务费'];
+function showFinanceRevenue(){
+  document.querySelector('.tabs-wrap').style.display='none';
+  document.getElementById('costDetailPage').style.display='none';
+  document.getElementById('financeRevenuePage').style.display='flex';
+  document.querySelector('.topbar-title').textContent='财务系统-收益明细';
+  document.querySelector('.topbar-breadcrumb').innerHTML='<span>首页</span><span class="sep">›</span><span>报表管理</span><span class="sep">›</span><span>财务系统-收益明细</span>';
+  renderFinanceRevenueTable();
+}
+function showFinanceRevenueFromSidebar(el){
+  setActive(el);
+  showFinanceRevenue();
+}
+function hideFinanceRevenue(){
+  document.getElementById('financeRevenuePage').style.display='none';
+}
+function renderFinanceRevenueTable(){
+  const t=document.getElementById('financeRevenueTable');
+  let h='<thead><tr>';
+  financeRevenueCols.forEach(c=>{h+='<th>'+c+'</th>';});
+  h+='</tr></thead><tbody>';
+  h+='<tr><td colspan="'+financeRevenueCols.length+'" style="text-align:center;padding:40px 0;color:var(--text-muted)">暂无数据，请点击数据预览</td></tr>';
+  h+='</tbody>';
+  t.innerHTML=h;
+  document.getElementById('financeRevenueCount').textContent='共 0 条';
+}
+
 const highlightFees=['提车费','空中交付成本','现场交付成本','现场过户成本','政企场地费'];
 const feeDetailData=[
 {v:'1707307500',p:'粤AA82670',f:'提车费',t:'2026-03-12 09:10:00',a:'150.00',u:'系统上传'},
