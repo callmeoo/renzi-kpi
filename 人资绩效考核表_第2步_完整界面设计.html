@@ -225,9 +225,9 @@
                             <th style="min-width:72px">评估师</th><th style="min-width:72px">区域经理</th><th style="min-width:72px">副部长</th><th style="min-width:72px">事业部</th>
                             <th style="min-width:68px">合同类型</th><th style="min-width:80px">关键事件</th>
                             <th style="min-width:80px">责任方</th>
-                            <th style="min-width:80px" class="col-new">责任人<span class="col-tip">新增字段</span></th>
-                            <th class="num col-new" style="min-width:100px">售后金额(亏损/盈利)<span class="col-tip">新增字段 — <span style="color:#fca5a5">待定，找红姐确认</span></span></th>
-                            <th style="min-width:120px" class="col-new">情况说明<span class="col-tip">新增字段</span></th>
+                            <th style="min-width:80px" class="col-new">责任人</th>
+                            <th class="num col-new" style="min-width:100px">售后金额</th>
+                            <th style="min-width:120px" class="col-new">情况说明</th>
                             <th style="min-width:88px">清分日期</th><th class="num" style="min-width:90px">成交价</th><th class="num" style="min-width:90px">合同价</th><th class="num" style="min-width:90px">起拍价</th>
                             <th class="num" style="min-width:100px">交易总毛利</th>
                             <th class="num" style="min-width:88px">唯普毛利</th><th class="num" style="min-width:88px">唯普云毛利</th>
@@ -352,7 +352,7 @@ const fieldDefs=[
 ['关键事件','数据写入时机点：已入库→检测过审→数据查询→已清分→现场交付→空中交付→现场过户→售后退车/售后不退车'],
 ['责任方','售后时的责任归属部门(仅取值到部门，eg.车源生态部)'],
 ['责任人','买家带出买家姓名；非买家若售后有填写责任人，则带出责任人（多个带出多个）'],
-['售后金额(亏损/盈利)','<span style="color:#dc2626;font-weight:600">待定，标红 — 找红姐确认</span>'],
+['售后金额','取值逻辑：售后列表该车辆对应"唯普+汇和+唯普云+机拍"的售后金额汇总'],
 ['情况说明','字段取值售后列表-"详情"（基本信息、情况说明、处理方案）'],
 ['清分日期','订单清分完成日期（yyyy-mm-dd）'],
 ['成交价','拍卖成交价格'],
