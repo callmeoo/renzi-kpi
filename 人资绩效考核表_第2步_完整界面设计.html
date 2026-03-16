@@ -256,6 +256,22 @@
                             <div><strong style="color:#0f172a;">4. 导出数据</strong> 支持导出为 CSV 格式，系统将自动按您的权限范围过滤数据。</div>
                             <div style="flex-basis:100%;"><strong style="color:#0f172a;">5. 数据权限</strong> 系统根据您的角色自动限制数据可见范围。</div>
                         </div>
+                        <div style="margin-top:24px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:16px 20px;">
+                            <div style="font-size:13px;font-weight:700;color:#1e40af;margin-bottom:10px;">权限说明</div>
+                            <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:#475569;line-height:1.7;">
+                                <div>• 支持各角色按<b>门店</b>配置权限</div>
+                                <div>• <b>人资</b>需按汇和和非汇和进行分类（汇和垫款门店 + 门店自垫款的12家门店）</div>
+                                <div>• <b>汇和财务</b>所看的内容同"汇和人资"</div>
+                                <div>• <b>业务员、门店总监、城市经理、副部长、部长</b>都是按照门店和事业部来配置的</div>
+                            </div>
+                        </div>
+                        <div style="margin-top:12px;background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:16px 20px;">
+                            <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:10px;">费用项变更说明</div>
+                            <div style="font-size:12.5px;color:#475569;line-height:1.7;">
+                                费用项会发生变化，调整后，<b style="color:#dc2626;">调整前已生成的费用项成本不变</b>。<br>
+                                例：原检测成本75元，后改成85元，已生成的75元不变，仅新生成的按85元计算。
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <!-- 字段含义 -->
@@ -361,8 +377,8 @@ const fieldDefs=[
 ['整备服务费','T3订单清分后计入，车辆整备服务费'],
 ['业务合作服务费','T3 订单清分后计入，同经管报表"业务合作服务费"字段\\n售后退车场景，同车(同vin)后续不再计算\\n仲裁退车后，再次上架当做新车处理，这台车是否还要收取"业务合作服务费"？如果收取，这里就应该有冲正数据；'],
 ['分成','同财务系统"分成"字段；（待技术确认指标值）'],
-['销售成本','T3 订单清分后计入，按车源类型分档；待定，未提供之前当做0处理\\n省外委拍 70：委拍合同车源且BMS门店地址不在广东省\\n省内委拍 35：委拍合同车源且BMS门店地址在广东省\\n收购业务 15：收购合同的车源\\n政企业务 30：政企拍卖车源\\n批量车报废业务 5：报废车车源'],
-['收购车成本','T3 订单清分后，非汽贸收购车，按车价分档\\n0＜收购合同价≤30,000元；收购车成本=1500元/台\\n30,000元＜收购合同价≤50,000元，收购车成本=1800元/台\\n50,000元＜收购合同价≤100,000元，收购车成本=2000元/台\\n100,000元＜收购合同价，收购车成本=收购合同价*2.5%\\n报废车收购合同，收购车成本：500元/台'],
+['销售成本','T3 订单清分后计入，按车源类型分档；功能上线后，人资未给新的数据，就按如下标准写入\\n省外委拍 70：委拍合同车源且BMS门店地址不在广东省\\n省内委拍 35：委拍合同车源且BMS门店地址在广东省\\n收购业务 15：收购合同的车源\\n政企业务 30：政企拍卖车源\\n批量车报废业务 5：报废车车源'],
+['收购车成本','T3 订单清分后，非汽贸收购车，按车价分档；功能上线后，人资未给新的数据，就按如下标准写入\\n0＜收购合同价≤30,000元；收购车成本=1500元/台\\n30,000元＜收购合同价≤50,000元，收购车成本=1800元/台\\n50,000元＜收购合同价≤100,000元，收购车成本=2000元/台\\n100,000元＜收购合同价，收购车成本=收购合同价*2.5%\\n报废车收购合同，收购车成本：500元/台'],
 ['垫款利息','收购车垫款产生的利息，同经管报表"垫款利息"字段\\n不论是否售后退车，都不做冲正'],
 ['政企场地费','人工核算，占位字段'],
 ['唯普毛利','归属唯普的毛利，同经管报表"唯普毛利"字段'],
@@ -857,7 +873,7 @@ function renderReqNotes(){
     document.getElementById('reqNotesContent').innerHTML=`
 <div style="margin-bottom:40px;">
     <div style="font-size:16px;font-weight:700;color:#0f172a;border-left:4px solid #16a34a;padding-left:10px;margin-bottom:6px;">需求补充说明</div>
-    <div style="font-size:13px;color:#475569;margin-bottom:14px;padding-left:14px;">关联需求和其他需求点说明</div>
+    <div style="font-size:13px;color:#dc2626;font-weight:600;margin-bottom:14px;padding-left:14px;">本tab仅是需求说明，功能上线不用展示此tab</div>
     <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px 20px;margin-bottom:16px;">
         <div style="font-size:13px;font-weight:700;color:#1e40af;margin-bottom:10px;">待确认事项</div>
         <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:#475569;line-height:1.7;">
