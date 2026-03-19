@@ -217,7 +217,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="table-toolbar"><div class="table-toolbar-left"><span>数据预览（前100条）</span><button class="btn btn-reset" style="margin-left:6px;padding:5px 10px;font-size:11px;" onclick="showFieldDefs()">指标取值</button><span class="total-badge">共 47 条</span><span style="color:#94a3b8;font-size:11px">⚠ 超出100条请导出查看</span></div></div>
+                    <div class="table-toolbar"><div class="table-toolbar-left"><button class="btn btn-reset" style="padding:5px 10px;font-size:11px;" onclick="showFieldDefs()">指标取值</button><span id="summaryBar" style="font-size:11px;color:#1e40af;font-weight:600;display:inline-flex;gap:12px;margin-left:8px;flex-wrap:wrap;"></span></div></div>
                     <div class="table-outer">
                         <table id="mainTable"><thead><tr>
                             <th style="min-width:80px">车牌</th><th style="min-width:130px">VIN码</th><th style="min-width:100px">VID</th>
@@ -261,7 +261,6 @@
                             </div>
                         </div>
                     </div>
-                    <div id="summaryBar" style="padding:8px 14px;border-top:1px solid var(--border);background:#eff6ff;font-size:12px;display:flex;gap:20px;flex-wrap:wrap;color:#1e40af;font-weight:600;"></div>
                 </div>
                 <!-- 使用指南 -->
                 <div class="tab-pane" id="tabGuide" style="padding:24px;overflow-y:auto;">
@@ -434,11 +433,11 @@ const fieldDefs=[
 ['政企场地费','人工核算，占位字段'],
 ['唯普毛利','归属唯普的毛利，同经管报表"唯普毛利"字段'],
 ['唯普云毛利','归属唯普云的毛利，同经管报表"唯普云毛利"字段'],
-['汇和毛利','调整汇和毛利取值逻辑，由原有1部分调整为4部分之和：汇和毛利 = ① 原有汇和收益 + ② 门店自垫款收益(门店自垫款车辆成交订单) + ③ 零售衍生收入(自拍后更改买家)+ ④ 门店自垫款订单调账\\n① 原有汇和收益（保持不变）\\n●数据来源：汇和毛利字段（huihesy + fshhgzsy + hhgzsy）\\n●钱包流水中摘要为【衍生服务-其他-结算】的记录，按车牌匹配90天内的成交订单（排除已仲裁退车的订单）\\n② 新增：门店自垫款收益\\n●适用范围：一汽大众事业部下属奥迪门店12家，见附表\\n●计算公式：门店成交订单，收益=（成交价 - 合同价）\\n●合同价 > 成交价时（结果为负），也纳入计算，记为负值\\n③ 新增：零售衍生收入\\n●适用范围：一汽大众事业部下属奥迪门店12家\\n●取值规则：该门店钱包账户中，已清算流水中摘要包含"零售溢价"的金额之和（含正负向）\\n●排重规则：排除账户名称为"汇和收益"的流水（避免与①重复计算）\\n④ 新增：门店自垫款调账\\n●适用范围：一汽大众事业部下属奥迪门店12家\\n●取值规则：已结算流水中摘要包含"订单调账款项：车牌"的金额之和'],
+['汇和毛利','调整汇和毛利取值逻辑，由原有1部分调整为4部分之和：汇和毛利 = ① 原有汇和收益 + ② 门店自垫款收益(门店自垫款车辆成交订单) + ③ 零售衍生收入(自拍后更改买家)+ ④ 门店自垫款订单调账\\n① 原有汇和收益（保持不变）\\n●数据来源：汇和毛利字段（huihesy + fshhgzsy + hhgzsy）\\n●钱包流水中摘要为【衍生服务-其他-结算】的记录，按车牌匹配90天内的成交订单（排除已仲裁退车的订单）\\n② 新增：门店自垫款收益\\n●适用范围：一汽大众事业部下属奥迪门店12家，见附表\\n●计算公式：门店成交订单，收益=（成交价 - 合同价）\\n●合同价 > 成交价时（结果为负），也纳入计算，记为负值\\n③ 新增：零售衍生收入\\n●适用范围：一汽大众事业部下属奥迪门店12家\\n●取值规则：该门店钱包账户中，已清算流水中摘要包含"零售溢价"的金额之和（含正负向）\\n●排重规则：排除账户名称为"汇和收益"的流水（避免与①重复计算）\\n④ 新增：门店自垫款调账\\n●适用范围：一汽大众事业部下属奥迪门店12家\\n●取值规则：门店钱包账户已结算流水中摘要包含"订单调账款项：车牌"的金额之和'],
 ['机拍毛利','归属机拍的毛利，同经管报表"机拍毛利"字段'],
 ['交易总毛利','唯普 + 唯普云 + 汇和 + 机拍毛利合计'],
-['现场交付成本','T4 交付型出库 150 元\\n交付型出库：包含4种情况：①服务中心出库，且出库类型=已售交付；②服务中心出库，且出库类型=过户临时过户出库（过户专员-过户不回库）；③服务中心出库，且出库类型=过户前临时放行；④服务中心出库，且出库类型=自过户提车'],
-['现场交付部门','<span style="color:#dc2626">执行现场交付的服务中心\\n举例：交付型出库的时候，车辆在唯普库，展示唯普库对应的服务中心（唯普服务中心，!!以库位为基准,区别于"现场过户部门"）</span>'],
+['现场交付成本','T4 交付型出库 150 元\\n交付型出库：包含3种情况①②③\\n①车辆在唯普库（不一定在库，车辆归于唯普库），且提车类型=已售交付\\n②车辆在唯普库，且提车类型=过户出库(临)且过户专员点击"过户不回库"\\n③车辆在唯普库，且提车类型=自过户提车\\n<span style="color:#dc2626;font-weight:600;">说明：还有1种情况，不能代表车辆交付给客户了，④车辆在唯普库，且出库类型=过户前临时放行（交付客户+交车给服务商办理年审、车辆修正）@红姐需知晓，所以这个交付型出库无法判定，看下人资的意见，是否改系统；未改系统就只能去除此逻辑</span>'],
+['现场交付部门','执行现场交付的时候，车辆所在唯普库对应的服务中心\\n<span style="color:#dc2626;font-weight:600;">请注意这里不是过户任务单对应的跟进服务中心</span>'],
 ['空中交付成本','50元；T5 过户资料回收完毕，车辆不在服务中心库时计入\\n空中交付：过户资料回收完毕 且 车辆不在服务中心库'],
 ['空中交付部门','<span style="color:#dc2626">过户服务中心或中控\\n过户任务单中对应的服务中心；过户资料回收完毕时，车辆若在门店库，归属中控；排掉限定门店（小欣提供门店名单，门店列表若发生更新，历史数据不做改动）</span>'],
 ['空中交付跟进人','点击资料回收完毕的操作人姓名'],
@@ -638,19 +637,18 @@ function renderTable(){
             <td><div style="display:flex;gap:4px"><button class="act-btn" onclick="openDetail(${i})">详情</button></div></td>
         </tr>`}).join('');
     document.getElementById('pageInfo').textContent=`第 ${curPage}/${maxP} 页，共 ${rows.length} 条`;
-    // summary
-    const s={totalProfit:0,weipuProfit:0,weipuyunProfit:0,huiheProfit:0,jipaProfit:0,perfProfit:0,pickupFee:0,inspCost:0,dataCost:0,salesCost:0,deliveryCost:0,airDeliveryCost:0,transferCost:0,bizFee:0,loanInterest:0};
-    rows.forEach(r=>{for(const k in s)s[k]+=(r[k]||0)});
-    document.getElementById('summaryBar').innerHTML=`<span>汇总（全部 ${rows.length} 条）：</span>`+
+    // summary — 车辆数(VIN去重) + 交易总毛利 + 各毛利项
+    const vinSet=new Set();const s={totalProfit:0,weipuProfit:0,weipuyunProfit:0,huiheProfit:0,jipaProfit:0,perfProfit:0};
+    rows.forEach(r=>{vinSet.add(r.vin);for(const k in s)s[k]+=(r[k]||0)});
+    document.getElementById('summaryBar').innerHTML=
+        `<span>汇总（${rows.length}条）</span>`+
+        `<span>车辆数(排重): ${vinSet.size}</span>`+
         `<span>交易总毛利: ${s.totalProfit.toLocaleString()}</span>`+
         `<span>绩效毛利: ${s.perfProfit.toLocaleString()}</span>`+
         `<span>唯普: ${s.weipuProfit.toLocaleString()}</span>`+
         `<span>唯普云: ${s.weipuyunProfit.toLocaleString()}</span>`+
         `<span>汇和: ${s.huiheProfit.toLocaleString()}</span>`+
-        `<span>机拍: ${s.jipaProfit.toLocaleString()}</span>`+
-        `<span>提车费: ${s.pickupFee.toLocaleString()}</span>`+
-        `<span>检测: ${s.inspCost.toLocaleString()}</span>`+
-        `<span>销售: ${s.salesCost.toLocaleString()}</span>`;
+        `<span>机拍: ${s.jipaProfit.toLocaleString()}</span>`;
 }
 function openDetail(idx){
     const r=rows[idx];
