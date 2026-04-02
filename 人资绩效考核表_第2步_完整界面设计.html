@@ -165,6 +165,7 @@
             <div class="sidebar-item" onclick="location.href='经管报表.html#costDetail'"><span class="icon">📋</span> 费用明细</div>
             <div class="sidebar-item active" onclick="setActive(this)"><span class="icon">🚗</span> 车源绩效看板</div>
             <div class="sidebar-item" onclick="location.href='经管报表.html#financeRevenue'"><span class="icon">💰</span> 财务系统-收益明细</div>
+            <div class="sidebar-item" onclick="switchTab(document.querySelectorAll('.tab-btn')[6],'tabChangelog')"><span class="icon">📝</span> 功能更新说明</div>
         </div>
     </div>
     <!-- MAIN -->
@@ -183,6 +184,7 @@
                     <button class="tab-btn" onclick="switchTab(this,'tabGlossary')">字段含义</button>
                     <button class="tab-btn" onclick="switchTab(this,'tabReqNotes')">需求补充说明</button>
                     <button class="tab-btn" onclick="switchTab(this,'tabCases')">实际案例</button>
+                    <button class="tab-btn" onclick="switchTab(this,'tabChangelog')">功能更新说明</button>
                 </div>
                 <!-- 数据看板 tab -->
                 <div class="tab-pane active" id="tabDashboard" style="overflow-y:auto;padding:20px;">
@@ -329,6 +331,19 @@
                 <!-- 实际案例 -->
                 <div class="tab-pane" id="tabCases" style="overflow-y:auto;padding:24px;">
                     <div style="max-width:900px;margin:0;" id="casesContent"></div>
+                </div>
+                <!-- 功能更新说明 -->
+                <div class="tab-pane" id="tabChangelog" style="overflow-y:auto;padding:24px;">
+                    <div style="max-width:900px;margin:0;">
+                        <h3 style="font-size:15px;font-weight:700;margin-bottom:16px;">📝 功能更新说明</h3>
+                        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px 20px;margin-bottom:16px;">
+                            <div style="font-size:13px;font-weight:700;color:#1e40af;margin-bottom:10px;">更新时间：2026.4.2</div>
+                            <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:#475569;line-height:1.7;">
+                                <div>1. 人资确认 绩效看板字段权限：除 职能部门(绩效管理员、汇和人资、唯普人资、汇和财务、唯普财务)外，其他角色都只可查看交易总毛利，不可以查看"唯普毛利、汇和毛利、机拍毛利、唯普云毛利"</div>
+                                <div>2. 人资确认 订单发生售后，若交易总毛利未发生变化，不进行售后数据写入，不会产生售后冲正行。</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -738,7 +753,7 @@ function openDetail(idx){
             <div class="tl-item"><div class="tl-dot ${r.dealPrice>0?'done':'pending'}"></div><div class="tl-card"><div class="tl-header"><span class="tl-title">T3 · 订单清分</span><span class="tl-time">${r.dealPrice>0?r.confirmDate:'未成交'}</span></div><div class="tl-details"><div class="tl-detail">成交价：<strong>${r.dealPrice?r.dealPrice.toLocaleString()+'元':'—'}</strong></div><div class="tl-detail">评估费：<strong>${r.evalFee?'+'+r.evalFee+'元':'—'}</strong></div></div></div></div>
             <div class="tl-item"><div class="tl-dot ${r.deliveryCost>0?'done':'pending'}"></div><div class="tl-card"><div class="tl-header"><span class="tl-title">T4 · 现场交付</span><span class="tl-time">${r.deliveryCost>0?r.confirmDate:'未完成'}</span></div><div class="tl-details"><div class="tl-detail">交付部门：<strong>${r.deliveryDept}</strong></div><div class="tl-detail">现场交付成本：<strong>${r.deliveryCost>0?'+'+r.deliveryCost+'元':'—'}</strong></div></div></div></div>
             <div class="tl-item"><div class="tl-dot ${r.transferCost>0||r.airDeliveryCost>0?'done':'pending'}"></div><div class="tl-card"><div class="tl-header"><span class="tl-title">T5 · 空中交付 / 现场过户</span><span class="tl-time">${r.transferCost>0||r.airDeliveryCost>0?r.confirmDate:'未完成'}</span></div><div class="tl-details"><div class="tl-detail">现场过户成本：<strong>${r.transferCost>0?'+'+r.transferCost+'元':'—'}</strong></div><div class="tl-detail">空中交付成本：<strong>${r.airDeliveryCost>0?'+'+r.airDeliveryCost+'元':'未触发'}</strong></div><div class="tl-detail">过户跟进人：<strong>${r.transferFollower||'—'}</strong></div><div class="tl-detail">空中交付跟进人：<strong>${r.airDeliveryFollower||'—'}</strong></div></div></div></div>
-            <div class="tl-item"><div class="tl-dot ${r.aftersaleRecord?'warn':'pending'}"></div><div class="tl-card" style="${r.aftersaleRecord?'border-color:#fca5a5;background:#fff5f5':''}"><div class="tl-header"><span class="tl-title" style="${r.aftersaleRecord?'color:#dc2626':''}">T6 · 售后执行</span><span class="tl-time">${r.aftersaleRecord?r.confirmDate:'未发生'}</span></div>${r.aftersaleRecord?`<div class="tl-details"><div class="tl-detail">是否退车：<strong>${r.aftersaleRecord.exempt!==undefined?(r.aftersale&&r.aftersale.includes('退车')?'退车':'不退车'):'—'}</strong></div><div class="tl-detail">售后类型：<strong>${r.aftersaleType||'—'}</strong></div><div class="tl-detail">责任方：<strong style="color:#dc2626">${r.aftersaleRecord.responsibility}</strong></div><div class="tl-detail">责任人：<strong>${r.responsiblePerson||'—'}</strong></div><div class="tl-detail" style="grid-column:span 2">情况说明：<strong>${r.situationDesc||'—'}</strong></div><div class="tl-detail">售后金额：<strong style="color:#dc2626">${r.aftersaleAmount?r.aftersaleAmount.toLocaleString()+'元':'—'}</strong></div><div class="tl-detail">豁免额：<strong>${r.aftersaleRecord.exempt?r.exemptionAmount+'元':'0元'}</strong></div><div class="tl-detail" style="grid-column:span 2">冲正项：<strong>交易总毛利、各方毛利（所有成本项不冲正）</strong></div></div><div style="font-size:11px;color:#94a3b8;margin-top:8px;padding-top:6px;border-top:1px dashed #e2e8f0;">售后交易总毛利未发生变化（售后执行前后交易总毛利不变），则计入该事件，无需进行售后相关内容写入。</div>`:'<div style="font-size:12px;color:#94a3b8;margin-top:4px">暂无售后记录</div>'}</div></div>
+            <div class="tl-item"><div class="tl-dot ${r.aftersaleRecord?'warn':'pending'}"></div><div class="tl-card" style="${r.aftersaleRecord?'border-color:#fca5a5;background:#fff5f5':''}"><div class="tl-header"><span class="tl-title" style="${r.aftersaleRecord?'color:#dc2626':''}">T6 · 售后执行</span><span class="tl-time">${r.aftersaleRecord?r.confirmDate:'未发生'}</span></div>${r.aftersaleRecord?`<div class="tl-details"><div class="tl-detail">是否退车：<strong>${r.aftersaleRecord.exempt!==undefined?(r.aftersale&&r.aftersale.includes('退车')?'退车':'不退车'):'—'}</strong></div><div class="tl-detail">售后类型：<strong>${r.aftersaleType||'—'}</strong></div><div class="tl-detail">责任方：<strong style="color:#dc2626">${r.aftersaleRecord.responsibility}</strong></div><div class="tl-detail">责任人：<strong>${r.responsiblePerson||'—'}</strong></div><div class="tl-detail" style="grid-column:span 2">情况说明：<strong>${r.situationDesc||'—'}</strong></div><div class="tl-detail">售后金额：<strong style="color:#dc2626">${r.aftersaleAmount?r.aftersaleAmount.toLocaleString()+'元':'—'}</strong></div><div class="tl-detail">豁免额：<strong>${r.aftersaleRecord.exempt?r.exemptionAmount+'元':'0元'}</strong></div><div class="tl-detail" style="grid-column:span 2">冲正项：<strong>交易总毛利、各方毛利（所有成本项不冲正）</strong></div></div><div style="font-size:11px;color:#94a3b8;margin-top:8px;padding-top:6px;border-top:1px dashed #e2e8f0;">售后交易总毛利未发生变化（售后执行前后交易总毛利不变），则不计入事件，无需进行售后相关内容写入。</div>`:'<div style="font-size:12px;color:#94a3b8;margin-top:4px">暂无售后记录</div>'}</div></div>
         </div></div>`;
     document.getElementById('detailModal').classList.add('open');
 }
@@ -1160,7 +1175,8 @@ function renderReqNotes(){
     <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:16px 20px;">
         <div style="font-size:13px;font-weight:700;color:#9a3412;margin-bottom:10px;">其他</div>
         <div style="font-size:12.5px;color:#475569;line-height:1.7;">
-            功能上线前，需先做业务宣导（告知业务即将到来的变动点）
+            1. 功能上线前，需先做业务宣导（告知业务即将到来的变动点）<br>
+            2. 功能上线后，重跑数据：功能上线当月的数据重跑。涉及：经管报表、绩效看板、财务收益表
         </div>
     </div>
 </div>`;
