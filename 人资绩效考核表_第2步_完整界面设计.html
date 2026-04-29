@@ -184,6 +184,7 @@
                     <button class="tab-btn" onclick="switchTab(this,'tabGlossary')">字段含义</button>
                     <button class="tab-btn" onclick="switchTab(this,'tabReqNotes')">需求补充说明</button>
                     <button class="tab-btn" onclick="switchTab(this,'tabCases')">实际案例</button>
+                    <button class="tab-btn" onclick="switchTab(this,'tabCasesNew')">实际案例(新)</button>
                     <button class="tab-btn" onclick="switchTab(this,'tabChangelog')">功能更新说明</button>
                 </div>
                 <!-- 数据看板 tab -->
@@ -331,6 +332,9 @@
                 <!-- 实际案例 -->
                 <div class="tab-pane" id="tabCases" style="overflow-y:auto;padding:24px;">
                     <div style="max-width:900px;margin:0;" id="casesContent"></div>
+                </div>
+                <div class="tab-pane" id="tabCasesNew" style="overflow-y:auto;padding:24px;">
+                    <div style="max-width:900px;margin:0;" id="casesContentNew"></div>
                 </div>
                 <!-- 功能更新说明 -->
                 <div class="tab-pane" id="tabChangelog" style="overflow-y:auto;padding:24px;">
@@ -1131,6 +1135,122 @@ function renderCases(){
 </div>
 `;
 }
+function renderCasesNew(){
+    let html = document.getElementById('casesContent').innerHTML;
+
+    // ---- 1.5 改写：流水模式说明 ----
+    html = html.replace(
+        /<b>1、<\/b>售后交易总毛利若发生变化[\s\S]*?根据实际情况写入数据/,
+        '<b>1、</b>本tab采用<b style="color:#dc2626;">流水模式</b>：售后只新增"流水行"，<b>不做冲正行</b>。流水值 = 售后后绝对值 − 原始绝对值（即 delta）。<br>'+
+        '<span style="display:inline-block;margin-left:16px;">【原始行】T1→T4 逐步累计的原始绩效毛利（保持不变）</span><br>'+
+        '<span style="display:inline-block;margin-left:16px;">【售后流水行】T6：唯普毛利/交易总毛利写入 delta；其他成本列按规则（业务合作费已收不退、不重收）</span><br>'+
+        '<b>2、</b>售后交易总毛利未变化，则不写入流水行<br>'+
+        '<b>3、</b>若车辆未发生清分，先售后：仅一行数据(本月)，跨月则按月分别写入<br>'+
+        '<b>4、</b>跨月场景天然支持：各月独立累加自己的流水，无需人为冲正'
+    );
+
+    // ---- 通用样式 ----
+    const C = 'padding:7px 10px;text-align:center;border-bottom:1px solid #e2e8f0;font-size:12px;';
+    const R = 'padding:7px 10px;text-align:right;border-bottom:1px solid #e2e8f0;font-size:12px;font-family:monospace;';
+    const sec = (cs,text,clr)=>{
+        const cm = clr==='red'?'#dc2626':clr==='blue'?'#2563eb':clr==='violet'?'#7c3aed':'#16a34a';
+        return `<tr><td colspan="${cs}" style="padding:8px 12px;background:${cm}10;border-left:3px solid ${cm};font-size:11.5px;font-weight:600;color:${cm};">${text}</td></tr>`;
+    };
+    const sumRow = (cs,label,val,red)=>`<tr style="background:#eff6ff;"><td colspan="${cs}" style="padding:8px 12px;text-align:right;font-weight:600;font-size:12px;color:#1e40af;border-top:2px solid #bfdbfe;">${label}</td><td style="padding:8px 12px;text-align:right;font-weight:700;font-size:13px;font-family:monospace;color:${red?'#dc2626':'#16a34a'};border-top:2px solid #bfdbfe;">${val}</td></tr>`;
+    // 18-col table head (used in case 2, 6, 7)
+    const head18 = `<thead><tr style="background:#1e3a5f;color:white;">${['月份','日期','车牌','关键事件','责任方'].map(h=>`<th style="padding:8px 10px;font-weight:600;font-size:11px;white-space:nowrap;text-align:center;">${h}</th>`).join('')}${['成交价','交易总毛利','唯普毛利','检测成本','数据成本','提车费','销售成本','垫款利息','现场交付','空中交付','现场过户','业务合作费','绩效毛利'].map(h=>`<th style="padding:8px 10px;font-weight:600;font-size:11px;white-space:nowrap;text-align:right;">${h}</th>`).join('')}</tr></thead>`;
+    // 20-col table head (used in case 5)
+    const head20 = `<thead><tr style="background:#1e3a5f;color:white;">${['月份','日期','车牌','关键事件','售后类型','责任方','责任人'].map(h=>`<th style="padding:8px 10px;font-weight:600;font-size:11px;white-space:nowrap;text-align:center;">${h}</th>`).join('')}${['售后金额','交易总毛利','唯普毛利','提车费','检测成本','数据成本','销售成本','垫款利息','现场交付','空中交付','现场过户','业务合作费','绩效毛利'].map(h=>`<th style="padding:8px 10px;font-weight:600;font-size:11px;white-space:nowrap;text-align:right;">${h}</th>`).join('')}</tr></thead>`;
+
+    // ===== 案例二（流水模式） =====
+    const case2 = `<div style="margin-bottom:40px;">
+<div style="font-size:16px;font-weight:700;color:#16a34a;border-left:4px solid #16a34a;padding-left:10px;margin-bottom:6px;">案例二：售后盈利（不论责任方，3月成交，4月售后）</div>
+<div style="font-size:13px;color:#475569;margin-bottom:14px;padding-left:14px;">售后实际盈利 ¥2,000。<b style="color:#dc2626;">流水模式</b>：T6 直接以 delta 写入流水（实际+2,000 − 原始+4,000 = -2,000），<b>不做冲正行</b>。<br>人资核算：【原始行 +3,270】+【售后流水 -2,000】= +1,270</div>
+<div style="overflow-x:auto;margin-bottom:12px;">
+<table style="border-collapse:collapse;width:100%;font-size:12px;min-width:1100px;">${head18}<tbody>
+${sec(18,'T3+T4 原始成交行（3/10，含T1/T2/T7累计成本）','green')}
+<tr style="background:#f8fafc;"><td style="${C}">3月</td><td style="${C}">3/10</td><td style="${C}">粤B12345</td><td style="${C}">已交付</td><td style="${C}">—</td><td style="${R}">50,000</td><td style="${R}">+4,000</td><td style="${R}">+4,000</td><td style="${R}">85</td><td style="${R}">10</td><td style="${R}">100</td><td style="${R}">35</td><td style="${R}">50</td><td style="${R}">150</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">300</td><td style="${R}color:#16a34a;font-weight:600;">[原始] +3,270</td></tr>
+${sec(18,'T6 售后流水（4/18）— 售后实际盈利+2,000，流水 = +2,000 − +4,000 = -2,000','blue')}
+<tr style="background:#f0f9ff;"><td style="${C}">4月</td><td style="${C}">4/18</td><td style="${C}">粤B12345</td><td style="${C}">售后退车</td><td style="${C}">买家</td><td style="${R}">50,000</td><td style="${R}color:#dc2626;font-weight:600;">-2,000</td><td style="${R}color:#dc2626;font-weight:600;">-2,000</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}color:#dc2626;font-weight:600;">[流水] -2,000</td></tr>
+${sumRow(17,'【人资叠加】原始 +3,270 ＋ 售后流水 -2,000 =','+1,270',false)}
+</tbody></table></div>
+<div style="background:#dbeafe;border:1px solid #93c5fd;border-radius:6px;padding:10px 14px;font-size:12px;color:#1e40af;">· 流水模式：售后行只写 delta，无需冲正；3月、4月各自累加自己的流水，跨月无需特殊处理</div>
+</div>`;
+
+    // ===== 案例五（流水模式） =====
+    const case5 = `<div style="margin-bottom:40px;">
+<div style="font-size:16px;font-weight:700;color:#dc2626;border-left:4px solid #dc2626;padding-left:10px;margin-bottom:6px;">案例五：售后亏损：已付款清分，再售后，交易总毛利为负，责任方是车源生态事业部</div>
+<div style="font-size:13px;color:#475569;margin-bottom:14px;padding-left:14px;">桂BDS0836，已付款清分后再售后。售后执行日：2026-03-16。售后类型：售后类，关键事件：售后退车，责任方：车源生态事业部，责任人：黄缵，售后金额：-1,200。<br><b style="color:#dc2626;">流水模式</b>：T3 已清分写入唯普毛利 +1,100；T6 售后退车直接新增流水（售后后净支出 -1,200，流水 = -1,200 − +1,100 = -2,300），<b>不做冲正行</b>。<br>人资核算：【原始行 +915】+【售后流水 -2,300】= <b>-1,385</b></div>
+<div style="overflow-x:auto;margin-bottom:12px;">
+<table style="border-collapse:collapse;width:100%;font-size:12px;min-width:1100px;">${head20}<tbody>
+${sec(20,'T1 入唯普库（3/1）— 提车费 ¥100 计入','green')}
+<tr style="background:#f8fafc;"><td style="${C}">3月</td><td style="${C}">3/1</td><td style="${C}">桂BDS0836</td><td style="${C}">首次入唯普库</td><td style="${C}">-</td><td style="${C}">-</td><td style="${C}">-</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">100</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}color:#dc2626;font-weight:600;">-100</td></tr>
+${sec(20,'T2 检测过审（3/2）— 省内检测成本 ¥85 计入','green')}
+<tr style="background:#f8fafc;"><td style="${C}">3月</td><td style="${C}">3/2</td><td style="${C}">桂BDS0836</td><td style="${C}">检测过审</td><td style="${C}">-</td><td style="${C}">-</td><td style="${C}">-</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">100</td><td style="${R}">85</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}color:#dc2626;font-weight:600;">-185</td></tr>
+${sec(20,'T3 已清分（3/16 10:27）— 唯普毛利 1,100，交易总毛利 1,100','blue')}
+<tr style="background:#f0f9ff;"><td style="${C}">3月</td><td style="${C}">3/16</td><td style="${C}">桂BDS0836</td><td style="${C}">已清分</td><td style="${C}">-</td><td style="${C}">-</td><td style="${C}">-</td><td style="${R}">0</td><td style="${R}color:#16a34a;font-weight:600;">+1,100</td><td style="${R}color:#16a34a;font-weight:600;">+1,100</td><td style="${R}">100</td><td style="${R}">85</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}color:#16a34a;font-weight:600;">+915</td></tr>
+${sec(20,'T6 售后退车流水（3/16 17:53）— 流水 = 售后后(-1,200) − 原始(+1,100) = -2,300（车源生态事业部责任，不豁免）','red')}
+<tr style="background:#fff5f5;"><td style="${C}">3月</td><td style="${C}">3/16</td><td style="${C}">桂BDS0836</td><td style="${C}">售后退车</td><td style="${C}">售后类</td><td style="${C}">车源生态事业部</td><td style="${C}font-size:11px;">黄缵</td><td style="${R}color:#dc2626;font-weight:600;">-1,200</td><td style="${R}color:#dc2626;font-weight:600;">-2,300</td><td style="${R}color:#dc2626;font-weight:600;">-2,300</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}color:#dc2626;font-weight:600;">[流水] -2,300</td></tr>
+${sumRow(19,'【人资叠加】原始 +915 ＋ 售后流水 -2,300 =','-1,385',true)}
+</tbody></table></div>
+<div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:6px;padding:10px 14px;font-size:12px;color:#991b1b;">· 流水模式：售后只新增流水行 -2,300（=售后后绝对值 -1,200 − 原始绝对值 +1,100），无冲正行；累计 +1,100+(-2,300)=-1,200 即为最终唯普毛利</div>
+</div>`;
+
+    // ===== 案例六（流水模式：退车重拍） =====
+    const case6 = `<div style="margin-bottom:40px;">
+<div style="font-size:16px;font-weight:700;color:#7c3aed;border-left:4px solid #7c3aed;padding-left:10px;margin-bottom:6px;">案例六：售后退车重拍</div>
+<div style="font-size:13px;color:#475569;margin-bottom:14px;padding-left:14px;line-height:1.8;"><b style="color:#dc2626;">流水模式</b>：<b>T6 售后退车</b>直接新增一行流水（按责任方判定后的售后后绝对值 − 原始绝对值），<b>不做冲正行</b>。<br><b>重拍新订单：</b>提车费¥100不重计；T2检测¥85、T7数据¥10、T3各项按实际重新触发。重拍成交价低于原合同价的贬值损失由车源生态部承担。<br><b>人资核算：</b>原始行 + 售后流水（按责任方规则）+ 重拍清分行，三行叠加。</div>
+<div style="overflow-x:auto;margin-bottom:12px;">
+<table style="border-collapse:collapse;width:100%;font-size:12px;min-width:1100px;">${head18}<tbody>
+${sec(18,'【原始交易】T3+T4 原始成交行（3/10，含T1/T2/T7累计成本）','green')}
+<tr style="background:#f8fafc;"><td style="${C}">3月</td><td style="${C}">3/10</td><td style="${C}">粤B12345</td><td style="${C}">已交付</td><td style="${C}">—</td><td style="${R}">50,000</td><td style="${R}">+4,000</td><td style="${R}">+4,000</td><td style="${R}">85</td><td style="${R}">10</td><td style="${R}">100</td><td style="${R}">35</td><td style="${R}">50</td><td style="${R}">150</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">300</td><td style="${R}color:#16a34a;font-weight:600;">[原始] +3,270</td></tr>
+${sec(18,'T6 售后退车流水（4/20）— 按责任方判定 售后后绝对值 -2,000；流水 = -2,000 − +4,000 = -6,000','red')}
+<tr style="background:#fff5f5;"><td style="${C}">4月</td><td style="${C}">4/20</td><td style="${C}">粤B12345</td><td style="${C}">售后退车</td><td style="${C}">按实际责任方判定</td><td style="${R}">50,000</td><td style="${R}color:#dc2626;font-weight:600;">-6,000</td><td style="${R}color:#dc2626;font-weight:600;">-6,000</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}color:#dc2626;font-weight:600;">[流水] -6,000</td></tr>
+${sec(18,'【重拍新订单】T2 检测过审（4/21）— 检测¥85 重新触发 | 车在库，提车费不重计','violet')}
+<tr style="background:#f5f3ff;"><td style="${C}">4月</td><td style="${C}">4/21</td><td style="${C}">粤B12345</td><td style="${C}">重拍检测过审</td><td style="${C}">—</td><td style="${R}">—</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">85</td><td style="${R}">0</td><td style="${R}">不计</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}color:#dc2626;font-weight:600;">-85</td></tr>
+${sec(18,'【重拍新订单】T7 数据查询成功（4/21）— 数据成本 ¥10 重新触发','violet')}
+<tr style="background:#f5f3ff;"><td style="${C}">4月</td><td style="${C}">4/21</td><td style="${C}">粤B12345</td><td style="${C}">重拍数据查询</td><td style="${C}">—</td><td style="${R}">—</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">85</td><td style="${R}">10</td><td style="${R}">不计</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}color:#dc2626;font-weight:600;">-95</td></tr>
+${sec(18,'【重拍新订单】T3 订单清分（5/5）— 重拍毛利 + 销售成本¥35 + 业务合作费¥300 + 垫款利息¥50','violet')}
+<tr style="background:#f5f3ff;"><td style="${C}">5月</td><td style="${C}">5/5</td><td style="${C}">粤B12345</td><td style="${C}">重拍已清分</td><td style="${C}">—</td><td style="${R}">46,000</td><td style="${R}">-2,000</td><td style="${R}">-2,000</td><td style="${R}">85</td><td style="${R}">10</td><td style="${R}">不计</td><td style="${R}">35</td><td style="${R}">50</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">300</td><td style="${R}">[重拍] -2,480</td></tr>
+${sumRow(17,'【人资叠加】原始 +3,270 ＋ 售后流水 -6,000 ＋ 重拍 -2,480 =','-5,210',true)}
+</tbody></table></div>
+<div style="background:#ede9fe;border:1px solid #c4b5fd;border-radius:6px;padding:10px 14px;font-size:12px;color:#5b21b6;">· 流水模式：T6 一行流水 -6,000 同时承担"取消原交易"和"按责任方损失"两部分（原 +4,000 抵消 + 责任损失 -2,000）；重拍订单按新流水独立累加</div>
+</div>`;
+
+    // ===== 案例七（流水模式：业务合作费处理） =====
+    const case7 = `<div style="margin-bottom:40px;">
+<div style="font-size:16px;font-weight:700;color:#0284c7;border-left:4px solid #0284c7;padding-left:10px;margin-bottom:6px;">案例七：售后退车 — 业务合作费处理（已收费不在此重复收取）</div>
+<div style="font-size:13px;color:#475569;margin-bottom:14px;padding-left:14px;">T3清分时业务合作费¥300已收取写入。<b style="color:#dc2626;">流水模式</b>：T6 售后流水行业务合作费=0（不退、不重收），唯普毛利写入 delta（售后后800 − 原始4,000 = -3,200）。<br>车辆4/26日重新成交清分，毛利2,000，业务合作费=0（不重收）。<br>核心规则：业务合作费¥300 不重收。</div>
+<div style="overflow-x:auto;margin-bottom:12px;">
+<table style="border-collapse:collapse;width:100%;font-size:12px;min-width:1100px;">${head18}<tbody>
+${sec(18,'T3 订单清分（3/12）— 业务合作费¥300 在T3一次性收取写入，后续不再重复','green')}
+<tr style="background:#f8fafc;"><td style="${C}">3月</td><td style="${C}">3/12</td><td style="${C}">粤B99999</td><td style="${C}">已清分</td><td style="${C}">—</td><td style="${R}">48,000</td><td style="${R}">+4,000</td><td style="${R}">+4,000</td><td style="${R}">85</td><td style="${R}">10</td><td style="${R}">100</td><td style="${R}">35</td><td style="${R}">50</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">300(已收)</td><td style="${R}color:#16a34a;font-weight:600;">[原始] +3,420</td></tr>
+${sec(18,'T6 售后流水（4/25）— 买方违约，售后后唯普毛利+800；流水 = +800 − +4,000 = -3,200（业务合作费=0，不退不重收）','red')}
+<tr style="background:#fff5f5;"><td style="${C}">4月</td><td style="${C}">4/25</td><td style="${C}">粤B99999</td><td style="${C}">售后退车</td><td style="${C}">买家</td><td style="${R}">48,000</td><td style="${R}color:#dc2626;font-weight:600;">-3,200</td><td style="${R}color:#dc2626;font-weight:600;">-3,200</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0(不退/不重收)</td><td style="${R}color:#dc2626;font-weight:600;">[流水] -3,200</td></tr>
+${sec(18,'重新成交清分（4/26）— 毛利 2,000，业务合作费=0（不重收）','blue')}
+<tr style="background:#f0f9ff;"><td style="${C}">4月</td><td style="${C}">4/26</td><td style="${C}">粤B99999</td><td style="${C}">已清分</td><td style="${C}">—</td><td style="${R}">46,000</td><td style="${R}color:#16a34a;font-weight:600;">+2,000</td><td style="${R}color:#16a34a;font-weight:600;">+2,000</td><td style="${R}">85</td><td style="${R}">10</td><td style="${R}">0</td><td style="${R}">35</td><td style="${R}">50</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0</td><td style="${R}">0(不重收)</td><td style="${R}color:#16a34a;font-weight:600;">+1,820</td></tr>
+${sumRow(17,'【人资叠加】原始 +3,420 ＋ 售后流水 -3,200 ＋ 重新清分 +1,820 =','+2,040',false)}
+</tbody></table></div>
+<div style="background:#e0f2fe;border:1px solid #7dd3fc;border-radius:6px;padding:10px 14px;font-size:12px;color:#0c4a6e;">· 业务合作费¥300：T3收取一次，售后流水行=0（不退），重新清分行=0（不重收）；流水模式下无冲正行</div>
+</div>`;
+
+    // ---- 替换案例 2、5、6、7 ----
+    function rep(s, anchor, block){
+        const i = s.indexOf(anchor);
+        if(i<0) return s;
+        const ws = s.lastIndexOf('<div style="margin-bottom:40px;">', i);
+        if(ws<0) return s;
+        let we = s.indexOf('<div style="margin-bottom:40px;">', ws+1);
+        if(we<0) we = s.length;
+        return s.slice(0,ws) + block + s.slice(we);
+    }
+    html = rep(html, '案例二：售后盈利', case2);
+    html = rep(html, '案例五：售后亏损', case5);
+    html = rep(html, '案例六：售后退车重拍', case6);
+    html = rep(html, '案例七：售后退车', case7);
+
+    document.getElementById('casesContentNew').innerHTML = html;
+}
 function renderReqNotes(){
     document.getElementById('reqNotesContent').innerHTML=`
 <div style="margin-bottom:40px;">
@@ -1367,6 +1487,7 @@ function refreshDashboard(){
 renderDashboard();
 renderTable();
 renderCases();
+renderCasesNew();
 renderReqNotes();
 renderGlossary();
 document.getElementById('detailModal').addEventListener('click',function(e){if(e.target===this)closeModal()});
