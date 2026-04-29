@@ -1141,7 +1141,7 @@ function renderCasesNew(){
     // ---- 1.5 改写：流水模式说明 ----
     html = html.replace(
         /<b>1、<\/b>售后交易总毛利若发生变化[\s\S]*?根据实际情况写入数据/,
-        '<b>1、</b>本tab采用<b style="color:#dc2626;">流水模式</b>：售后只新增"流水行"，<b>不做冲正行</b>。流水值 = 售后后绝对值 − 原始绝对值（即 delta）。<br>'+
+        '<b>1、</b>本tab采用<b style="color:#dc2626;">流水模式</b>：售后只新增"流水行"，<b>不做冲正行</b>。<br>'+
         '<span style="display:inline-block;margin-left:16px;">【原始行】T1→T4 逐步累计的原始绩效毛利（保持不变）</span><br>'+
         '<span style="display:inline-block;margin-left:16px;">【售后流水行】T6：唯普毛利/交易总毛利写入 delta；其他成本列按规则（业务合作费已收不退、不重收）</span><br>'+
         '<b>2、</b>售后交易总毛利未变化，则不写入流水行<br>'+
